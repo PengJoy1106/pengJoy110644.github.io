@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>IOU相关知识 | 方方土'Blog</title><meta name="author" content="方方土同学"><meta name="copyright" content="方方土同学"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="IOU相关知识IoU 作为目标检测算法性能 mAP 计算的一个非常重要的函数。 1. 什么是IOUIoU 的全称为交并比（Intersection over Union），通过这个名称我们大概可以猜到 IoU 的计算方法。IoU 计算的是 “预测的边框” 和 “真实的边框” 的交集和并集的比值。  一般约定，在计算机检测任务中，如果IoU≥0.5，就说检测正确。当然0.5只是约定阈值，你可以将Io">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IOU相关知识">
+<meta property="og:url" content="http://pengjoy1106.top/2022/03/15/YOLOv5%E6%94%AF%E7%BA%BF%E5%AD%A6%E4%B9%A0%E4%B9%8BIOU%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="方方土&#39;Blog">
+<meta property="og:description" content="IOU相关知识IoU 作为目标检测算法性能 mAP 计算的一个非常重要的函数。 1. 什么是IOUIoU 的全称为交并比（Intersection over Union），通过这个名称我们大概可以猜到 IoU 的计算方法。IoU 计算的是 “预测的边框” 和 “真实的边框” 的交集和并集的比值。  一般约定，在计算机检测任务中，如果IoU≥0.5，就说检测正确。当然0.5只是约定阈值，你可以将Io">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252075.jpg">
+<meta property="article:published_time" content="2022-03-15T15:30:00.000Z">
+<meta property="article:modified_time" content="2022-03-25T12:26:17.017Z">
+<meta property="article:author" content="方方土同学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252075.jpg"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg"><link rel="canonical" href="http://pengjoy1106.top/2022/03/15/YOLOv5%E6%94%AF%E7%BA%BF%E5%AD%A6%E4%B9%A0%E4%B9%8BIOU%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'IOU相关知识',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-25 20:26:17'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/custom.css"><script src="/live2d-widget-master/autoload.js"></script><script src="/live2d-widget/autoload.js"></script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fas fa-file-video"></i><span> 光影旅途</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252075.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">方方土'Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fas fa-file-video"></i><span> 光影旅途</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">IOU相关知识</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-15T15:30:00.000Z" title="发表于 2022-03-15 23:30:00">2022-03-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-25T12:26:17.017Z" title="更新于 2022-03-25 20:26:17">2022-03-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/">计算机视觉</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="IOU相关知识"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="IOU相关知识"><a href="#IOU相关知识" class="headerlink" title="IOU相关知识"></a>IOU相关知识</h1><p>IoU 作为目标检测算法性能 mAP 计算的一个非常重要的函数。</p>
+<h2 id="1-什么是IOU"><a href="#1-什么是IOU" class="headerlink" title="1. 什么是IOU"></a>1. 什么是IOU</h2><p>IoU 的全称为交并比（Intersection over Union），通过这个名称我们大概可以猜到 IoU 的计算方法。IoU 计算的是 “预测的边框” 和 “真实的边框” 的交集和并集的比值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/IOU%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F.png"></p>
+<p>一般约定，在计算机检测任务中，如果IoU≥0.5，就说检测正确。当然0.5只是约定阈值，你可以将IoU的阈值定的更高。IoU越高，边界框越精确。</p>
+<p><strong>举例如下：</strong>绿色框是准确值，红色框是预测值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1.jpg"></p>
+<h2 id="2-代码实现"><a href="#2-代码实现" class="headerlink" title="2. 代码实现"></a>2. 代码实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">calculateIoU</span>(<span class="params">candidateBound, groundTruthBound</span>):</span><br><span class="line">    cx1 = candidateBound[<span class="number">0</span>]</span><br><span class="line">    cy1 = candidateBound[<span class="number">1</span>]</span><br><span class="line">    cx2 = candidateBound[<span class="number">2</span>]</span><br><span class="line">    cy2 = candidateBound[<span class="number">3</span>]</span><br><span class="line"> </span><br><span class="line">    gx1 = groundTruthBound[<span class="number">0</span>]</span><br><span class="line">    gy1 = groundTruthBound[<span class="number">1</span>]</span><br><span class="line">    gx2 = groundTruthBound[<span class="number">2</span>]</span><br><span class="line">    gy2 = groundTruthBound[<span class="number">3</span>]</span><br><span class="line"> </span><br><span class="line">    carea = (cx2 - cx1) * (cy2 - cy1) <span class="comment">#C的面积</span></span><br><span class="line">    garea = (gx2 - gx1) * (gy2 - gy1) <span class="comment">#G的面积</span></span><br><span class="line"> </span><br><span class="line">    x1 = <span class="built_in">max</span>(cx1, gx1)</span><br><span class="line">    y1 = <span class="built_in">max</span>(cy1, gy1)</span><br><span class="line">    x2 = <span class="built_in">min</span>(cx2, gx2)</span><br><span class="line">    y2 = <span class="built_in">min</span>(cy2, gy2)</span><br><span class="line">    w = <span class="built_in">max</span>(<span class="number">0</span>, <span class="built_in">abs</span>(x2 - x1))</span><br><span class="line">    h = <span class="built_in">max</span>(<span class="number">0</span>, <span class="built_in">abs</span>(y2 - y1))</span><br><span class="line">    area = w * h <span class="comment">#C∩G的面积</span></span><br><span class="line"> </span><br><span class="line">    iou = area / (carea + garea - area)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> iou</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-原理解析"><a href="#3-原理解析" class="headerlink" title="3. 原理解析"></a>3. 原理解析</h2><p>计算两个图片的交集，首先想到的是考虑两个图片边框的相对位置，然后按照它们的相对位置分情况讨论。</p>
+<p>相对位置无非以下几种：</p>
+<p><em>左上   左下   右上   右下   包含   互不相交</em></p>
+<p>如下图所示：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/2.jpg"></p>
+<p>但在实际上这样写代码是做不到的。</p>
+<p>换个角度思考：两个框交集的计算的实质是两个集合交集的计算，因此我们可以将两个框的交集的计算简化为：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/3.jpg"></p>
+<p>通过简化，我们可以清晰地看到，交集计算的关键是交集上下界点（图中蓝点）的计算。</p>
+<p>我们假设集合 A 为 [x 1 x_{1}<em>x</em>1，x 2 x_{2}<em>x</em>2]，集合 B 为 [y 1 y_{1}<em>y</em>1，y 2 y_{2}<em>y</em>2]。然后我们来求AB交集的上下界限。</p>
+<p>交集计算的逻辑</p>
+<ul>
+<li>交集下界 z 1 z_{1}<em>z</em>1：max ( x 1 , y 1 ) \text{max}(x_{1}, y_{1})max(<em>x</em>1,<em>y</em>1)</li>
+<li>交集上界 z 2 z_{2}<em>z</em>2：min ( x 2 , y 2 ) \text{min}(x_{2}, y_{2})min(<em>x</em>2,<em>y</em>2)</li>
+<li>如果 z 2 − z 1 z_{2}-z_{1}<em>z</em>2−<em>z</em>1 小于0，则说明集合 A 和集合 B 没有交集。</li>
+</ul>
+<p>在YOLOv5的项目代码中，作者使用如下代码计算iou。</p>
+<p>代码路径为：&#x2F;yolov5-master&#x2F;build&#x2F;lib.win-amd64-3.9&#x2F;utils&#x2F;metrics.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">bbox_iou</span>(<span class="params">box1, box2, x1y1x2y2=<span class="literal">True</span>, GIoU=<span class="literal">False</span>, DIoU=<span class="literal">False</span>, CIoU=<span class="literal">False</span>, eps=<span class="number">1e-7</span></span>):</span><br><span class="line">    <span class="comment"># Returns the IoU of box1 to box2. box1 is 4, box2 is nx4</span></span><br><span class="line">    box2 = box2.T</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Get the coordinates of bounding boxes</span></span><br><span class="line">    <span class="keyword">if</span> x1y1x2y2:  <span class="comment"># x1, y1, x2, y2 = box1</span></span><br><span class="line">        b1_x1, b1_y1, b1_x2, b1_y2 = box1[<span class="number">0</span>], box1[<span class="number">1</span>], box1[<span class="number">2</span>], box1[<span class="number">3</span>]</span><br><span class="line">        b2_x1, b2_y1, b2_x2, b2_y2 = box2[<span class="number">0</span>], box2[<span class="number">1</span>], box2[<span class="number">2</span>], box2[<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">else</span>:  <span class="comment"># transform from xywh to xyxy</span></span><br><span class="line">        b1_x1, b1_x2 = box1[<span class="number">0</span>] - box1[<span class="number">2</span>] / <span class="number">2</span>, box1[<span class="number">0</span>] + box1[<span class="number">2</span>] / <span class="number">2</span></span><br><span class="line">        b1_y1, b1_y2 = box1[<span class="number">1</span>] - box1[<span class="number">3</span>] / <span class="number">2</span>, box1[<span class="number">1</span>] + box1[<span class="number">3</span>] / <span class="number">2</span></span><br><span class="line">        b2_x1, b2_x2 = box2[<span class="number">0</span>] - box2[<span class="number">2</span>] / <span class="number">2</span>, box2[<span class="number">0</span>] + box2[<span class="number">2</span>] / <span class="number">2</span></span><br><span class="line">        b2_y1, b2_y2 = box2[<span class="number">1</span>] - box2[<span class="number">3</span>] / <span class="number">2</span>, box2[<span class="number">1</span>] + box2[<span class="number">3</span>] / <span class="number">2</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Intersection area</span></span><br><span class="line">    inter = (torch.<span class="built_in">min</span>(b1_x2, b2_x2) - torch.<span class="built_in">max</span>(b1_x1, b2_x1)).clamp(<span class="number">0</span>) * \</span><br><span class="line">            (torch.<span class="built_in">min</span>(b1_y2, b2_y2) - torch.<span class="built_in">max</span>(b1_y1, b2_y1)).clamp(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Union Area</span></span><br><span class="line">    w1, h1 = b1_x2 - b1_x1, b1_y2 - b1_y1 + eps</span><br><span class="line">    w2, h2 = b2_x2 - b2_x1, b2_y2 - b2_y1 + eps</span><br><span class="line">    union = w1 * h1 + w2 * h2 - inter + eps</span><br><span class="line"></span><br><span class="line">    iou = inter / union</span><br><span class="line">    <span class="keyword">if</span> CIoU <span class="keyword">or</span> DIoU <span class="keyword">or</span> GIoU:</span><br><span class="line">        cw = torch.<span class="built_in">max</span>(b1_x2, b2_x2) - torch.<span class="built_in">min</span>(b1_x1, b2_x1)  <span class="comment"># convex (smallest enclosing box) width</span></span><br><span class="line">        ch = torch.<span class="built_in">max</span>(b1_y2, b2_y2) - torch.<span class="built_in">min</span>(b1_y1, b2_y1)  <span class="comment"># convex height</span></span><br><span class="line">        <span class="keyword">if</span> CIoU <span class="keyword">or</span> DIoU:  <span class="comment"># Distance or Complete IoU https://arxiv.org/abs/1911.08287v1</span></span><br><span class="line">            c2 = cw ** <span class="number">2</span> + ch ** <span class="number">2</span> + eps  <span class="comment"># convex diagonal squared</span></span><br><span class="line">            rho2 = ((b2_x1 + b2_x2 - b1_x1 - b1_x2) ** <span class="number">2</span> +</span><br><span class="line">                    (b2_y1 + b2_y2 - b1_y1 - b1_y2) ** <span class="number">2</span>) / <span class="number">4</span>  <span class="comment"># center distance squared</span></span><br><span class="line">            <span class="keyword">if</span> CIoU:  <span class="comment"># https://github.com/Zzh-tju/DIoU-SSD-pytorch/blob/master/utils/box/box_utils.py#L47</span></span><br><span class="line">                v = (<span class="number">4</span> / math.pi ** <span class="number">2</span>) * torch.<span class="built_in">pow</span>(torch.atan(w2 / h2) - torch.atan(w1 / h1), <span class="number">2</span>)</span><br><span class="line">                <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">                    alpha = v / (v - iou + (<span class="number">1</span> + eps))</span><br><span class="line">                <span class="keyword">return</span> iou - (rho2 / c2 + v * alpha)  <span class="comment"># CIoU</span></span><br><span class="line">            <span class="keyword">return</span> iou - rho2 / c2  <span class="comment"># DIoU</span></span><br><span class="line">        c_area = cw * ch + eps  <span class="comment"># convex area</span></span><br><span class="line">        <span class="keyword">return</span> iou - (c_area - union) / c_area  <span class="comment"># GIoU https://arxiv.org/pdf/1902.09630.pdf</span></span><br><span class="line">    <span class="keyword">return</span> iou  <span class="comment"># IoU</span></span><br></pre></td></tr></table></figure>
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">方方土同学</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://pengjoy1106.top/2022/03/15/YOLOv5%E6%94%AF%E7%BA%BF%E5%AD%A6%E4%B9%A0%E4%B9%8BIOU%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/">http://pengjoy1106.top/2022/03/15/YOLOv5支线学习之IOU相关知识/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://pengjoy1106.top" target="_blank">方方土'Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252075.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/16/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1%E5%AD%A6%E4%B9%A01/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252249.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">数学建模学习笔记1</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/15/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252088.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">YOLOv5学习笔记1</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="lv-container" data-id="city" data-uid="MTAyMC81NTgxMC8zMjI3NQ"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">方方土同学</div><div class="author-info__description">你知道自己到底想要什么的。对吧？</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/PengJoy1106"><i class="fab fa-github"></i><span>关注</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/PengJoy1106" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:110644319@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">仅以此博客记录我的读研生活。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IOU%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">IOU相关知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFIOU"><span class="toc-number">1.1.</span> <span class="toc-text">1. 什么是IOU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.2.</span> <span class="toc-text">2. 代码实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">3. 原理解析</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" title="Deep_Learning学习笔记1"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deep_Learning学习笔记1"/></a><div class="content"><a class="title" href="/2022/03/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" title="Deep_Learning学习笔记1">Deep_Learning学习笔记1</a><time datetime="2022-03-25T15:00:00.000Z" title="发表于 2022-03-25 23:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Depp_Learning%E5%AE%9E%E6%88%98%E8%AE%AD%E7%BB%831/" title="post文章配置模板"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252239.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="post文章配置模板"/></a><div class="content"><a class="title" href="/2022/03/25/Depp_Learning%E5%AE%9E%E6%88%98%E8%AE%AD%E7%BB%831/" title="post文章配置模板">post文章配置模板</a><time datetime="2022-03-25T15:00:00.000Z" title="发表于 2022-03-25 23:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04/" title="Yolov5学习笔记4——源码剖析——Head部分"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记4——源码剖析——Head部分"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04/" title="Yolov5学习笔记4——源码剖析——Head部分">Yolov5学习笔记4——源码剖析——Head部分</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05/" title="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252121.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05/" title="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2">Yolov5学习笔记5——v5.0源码剖析——Backbone部分2</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03/" title="Yolov5学习笔记3——源码剖析——Backbone部分1"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696251947.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记3——源码剖析——Backbone部分1"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03/" title="Yolov5学习笔记3——源码剖析——Backbone部分1">Yolov5学习笔记3——源码剖析——Backbone部分1</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;undefined - 2022  <i id="heartbeat" class="fa fas fa-heartbeat"></i> 方方土同学</div><div class="footer_custom_text">💛所以你好，再见。💙</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">本地搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>function loadLivere () {
+  if (typeof LivereTower === 'object') {
+    window.LivereTower.init()
+  }
+  else {
+    (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  }
+}
+
+if ('Livere' === 'Livere' || !true) {
+  if (true) btf.loadComment(document.getElementById('lv-container'), loadLivere)
+  else loadLivere()
+}
+else {
+  function loadOtherComment () {
+    loadLivere()
+  }
+}</script></div><div class="aplayer no-destroy" data-id="2914746287" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false" data-lrctype=1 list-folded="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

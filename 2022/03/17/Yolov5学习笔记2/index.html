@@ -1,0 +1,361 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>YOLOv5学习笔记2 | 方方土'Blog</title><meta name="keywords" content="yolov5,python,计算机视觉"><meta name="author" content="方方土同学"><meta name="copyright" content="方方土同学"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="关于YOLOv5中整体代码框架代码的学习，主要了解每个文件夹和一些.py代码大概有什么作用，但并未深入学习其代码以及算法框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOv5学习笔记2">
+<meta property="og:url" content="http://pengjoy1106.top/2022/03/17/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/index.html">
+<meta property="og:site_name" content="方方土&#39;Blog">
+<meta property="og:description" content="关于YOLOv5中整体代码框架代码的学习，主要了解每个文件夹和一些.py代码大概有什么作用，但并未深入学习其代码以及算法框架。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg">
+<meta property="article:published_time" content="2022-03-17T09:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-25T13:12:22.669Z">
+<meta property="article:author" content="方方土同学">
+<meta property="article:tag" content="yolov5">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="计算机视觉">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg"><link rel="canonical" href="http://pengjoy1106.top/2022/03/17/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'YOLOv5学习笔记2',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-03-25 21:12:22'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/custom.css"><script src="/live2d-widget-master/autoload.js"></script><script src="/live2d-widget/autoload.js"></script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fas fa-file-video"></i><span> 光影旅途</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">方方土'Blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/bangumis/"><i class="fa-fw fas fa-file-video"></i><span> 光影旅途</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 链接</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></li><li><a class="site-page child" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">YOLOv5学习笔记2</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-17T09:00:00.000Z" title="发表于 2022-03-17 17:00:00">2022-03-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-03-25T13:12:22.669Z" title="更新于 2022-03-25 21:12:22">2022-03-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/">计算机视觉</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="YOLOv5学习笔记2"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Yolov5学习笔记2——代码框架"><a href="#Yolov5学习笔记2——代码框架" class="headerlink" title="Yolov5学习笔记2——代码框架"></a>Yolov5学习笔记2——代码框架</h1><p>打开Yolov5的代码，可以看到有许多文件夹和很多的子文件。本文主要弄清楚Yolov5的代码框架。</p>
+<h2 id="data文件夹"><a href="#data文件夹" class="headerlink" title="data文件夹"></a>data文件夹</h2><p>该文件夹下主要存放项目运行所需要的数据，包括一些超参、默认输入的图片等。</p>
+<h3 id="hyps文件夹"><a href="#hyps文件夹" class="headerlink" title="hyps文件夹"></a>hyps文件夹</h3><p>该文件夹下存放的都是训练参数</p>
+<ol>
+<li><code>hyp.Objects365.yaml</code>——项目在进行Objects365训练的超参数。</li>
+<li><code>hyp.scratch-high.yaml</code>——里面的参数为对COCO数据集从零开始进行高增强训练的超参数。</li>
+<li><code>hyp.scratch-low.yaml</code>——对COCO数据集从零开始进行低增强训练的超参数。</li>
+<li><code>hyp.scratch-med.yaml</code>——对COCO数据集从零开始进行中等增强训练的超参数。</li>
+<li><code>hyp.VOC.yaml</code>——对VOC数据集进行训练时的超参数。</li>
+</ol>
+<p>一般这些参数都不需要改动，这是作者团队大量训练记录的最好的参数结果。</p>
+<h3 id="images文件夹"><a href="#images文件夹" class="headerlink" title="images文件夹"></a>images文件夹</h3><p>该文件夹下存放了代码默认执行detect.py时检测的图片，执行后会在目录中新建一个<strong>runs</strong>文件夹并将检测的结果存放在&#x2F;runs&#x2F;detect文件夹下。</p>
+<h3 id="scripts文件夹"><a href="#scripts文件夹" class="headerlink" title="scripts文件夹"></a>scripts文件夹</h3><p>脚本文件夹。提供了下载权重文件夹、COCO数据集、COCO128数据集的方法。直接执行该脚本文件就可以直接下载<code>yolov5x.pt</code>文件和训练的数据集。</p>
+<p><strong>注意</strong>：如果想要运行脚本文件的话，首先要确定<code>PyCharm</code>有没有安装<code>PowerShell</code>平台，一般<code>PyCharm</code>会提示你安装的。</p>
+<p>当然我还是比较推荐直接从<code>github</code>官网中下载。而数据集当然是自制。</p>
+<h3 id="其他-yaml文件"><a href="#其他-yaml文件" class="headerlink" title="其他.yaml文件"></a>其他.yaml文件</h3><p>这些文件主要是对一些数据集做一个补充说明。如存放的路径、训练的路径、测试的路径等，以及这些数据集有多少张图片，定义了多少个类别等。当然代码中也写了下载这些数据集的方法。</p>
+<ol>
+<li><p><code>Argoverse.yaml</code>——Argo AI提供的Argoverse-HD数据集(环形前置中央摄像头)</p>
+</li>
+<li><p><code>coco.yaml</code>——由微软提供的COCO 2017数据集，网址为：<a target="_blank" rel="noopener" href="http://cocodataset.org/">http://cocodataset.org</a></p>
+</li>
+<li><p><code>coco128.yaml</code>——由作者所在公司Ultralytics提供的COCO128数据集(来自COCO train2017的前128张图片)，网址为：<a target="_blank" rel="noopener" href="https://www.kaggle.com/ultralytics/coco128">https://www.kaggle.com/ultralytics/coco128</a></p>
+</li>
+<li><p><code>GlobalWheat2020.yaml</code>——由萨斯喀彻温大学提供  全球小麦2020数据集网址为：<a target="_blank" rel="noopener" href="http://www.global-wheat.com/">http://www.global-wheat.com/</a></p>
+</li>
+<li><p><code>Objects365.yaml</code>——提供了365个检测对象的数据集，几乎涵盖了生活中的各种常见物体。</p>
+</li>
+<li><p><code>SKU-110K.yaml</code>——由Trax retail提供的SKU-110K零售项目数据集网址为：<a target="_blank" rel="noopener" href="https://github.com/eg4000/SKU110K_CVPR19">https://github.com/eg4000/SKU110K_CVPR19</a></p>
+</li>
+<li><p><code>VisDrone.yaml</code>——由天津大学提供的VisDrone2019-DET数据集(无人机拍摄的图片)<a target="_blank" rel="noopener" href="https://github.com/VisDrone/VisDrone-Dataset">https://github.com/VisDrone/VisDrone-Dataset</a></p>
+</li>
+<li><p><code>VOC.yaml</code>——由牛津大学提供的PASCAL VOC数据集<a target="_blank" rel="noopener" href="http://host.robots.ox.ac.uk/pascal/VOC">http://host.robots.ox.ac.uk/pascal/VOC</a></p>
+</li>
+<li><p><code>xView.yaml</code>——由美国国家地理空间情报局(NGA)提供的DIUx xView 2018挑战赛中的数据集。<a target="_blank" rel="noopener" href="https://challenge.xviewdataset.org/">https://challenge.xviewdataset.org</a></p>
+</li>
+</ol>
+<h2 id="model文件夹——模型文件"><a href="#model文件夹——模型文件" class="headerlink" title="model文件夹——模型文件"></a>model文件夹——模型文件</h2><p>在本文件夹中主要存放了各种Yolo算法的模型文件。在这些模型文件中定义了如下参数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">nc</td>
+<td align="center">训练和检测的类别数量</td>
+</tr>
+<tr>
+<td align="center">depth_multiple</td>
+<td align="center">网络深度</td>
+</tr>
+<tr>
+<td align="center">width_multiple</td>
+<td align="center">网络宽度</td>
+</tr>
+<tr>
+<td align="center">anchors</td>
+<td align="center">锚点框参数</td>
+</tr>
+<tr>
+<td align="center">backbone</td>
+<td align="center">骨干网络参数</td>
+</tr>
+<tr>
+<td align="center">head</td>
+<td align="center">检测头</td>
+</tr>
+</tbody></table>
+<p><strong>下面以yolov5s.yaml为例，对里面的相关参数进行详细解释。</strong></p>
+<h3 id="yaml介绍"><a href="#yaml介绍" class="headerlink" title=".yaml介绍"></a>.yaml介绍</h3><ol>
+<li>YAML(YAML Ain&#96;t Markup language)文件， <strong>它不是一个标记语言</strong>。配置文件有xml、properties等，但 **YAML是以数据为中心 **，更适合做配置文件。</li>
+<li>YAML的语法和其他高级语言类似，并且可以 <strong>简单表达清单、散列表，标量</strong>等数据形态。</li>
+<li>它使用 **空白符号缩进 **和大量依赖外观的特色，特别适合用来表达或编辑数据结构、各种配置文件、倾印调试内容、文件大纲。 <a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://www.runoob.com/w3cnote/yaml-intro.html">yaml介绍</a></li>
+<li>大小写敏感；缩进不允许使用tab，只允许空格；缩进的空格数不重要，只要相同层级的元素左对齐即可；’#’表示注释；使用缩进表示层级关系。</li>
+</ol>
+<p><strong>注意</strong>，在<code>yaml</code>文件中空格数其实也是重要的！在建立YAML 对象时，对象键值对使用冒号结构表示 <code>key: value</code>， <strong>冒号后面要加一个空格</strong>。</p>
+<h3 id="parameters"><a href="#parameters" class="headerlink" title="parameters"></a>parameters</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Parameters</span></span><br><span class="line">nc: <span class="number">80</span>  <span class="comment"># number of classes</span></span><br><span class="line">depth_multiple: <span class="number">0.33</span>  <span class="comment"># model depth multiple</span></span><br><span class="line">width_multiple: <span class="number">0.50</span>  <span class="comment"># layer channel multiple</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>nc： <strong>类别数</strong>，你的类别有多少就填写多少。从1开始算起，不是0-14这样算。</li>
+<li>depth_multiple：控制 <strong>模型的深度</strong>。</li>
+<li>width_multiple：控制 <strong>卷积核的个数</strong>。</li>
+</ol>
+<blockquote>
+<p>**depth_multiple **是用在 **backbone **中的 **number≠1的情况下， **即在Bottleneck层使用，控制模型的深度，yolov5s中设置为0.33，假设yolov5l中有三个Bottleneck，那yolov5s中就只有一个Bottleneck。<br>因为一般 **number&#x3D;1 **表示的是 **功能背景的层 **，比如说下采样Conv、Focus、SPP（空间金字塔池化）。<br>——————————————————————————————————————<br>**width_multiple **主要是用于设置arguments，例如yolov5s设置为0.5，Focus就变成[32, 3]，Conv就变成[64, 3, 2]。<br>以此类推，卷积核的个数都变成了设置的一半。</p>
+</blockquote>
+<p>yolov5提供了s、m、l、x四种，所有的<code>.yaml</code>文件都设置差不多，只有上面2和3的设置不同，作者团队很厉害，只需要修改这两个参数就可以调整模型的网络结构。</p>
+<h3 id="anchors"><a href="#anchors" class="headerlink" title="anchors"></a>anchors</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">anchors:</span><br><span class="line">  - [<span class="number">10</span>,<span class="number">13</span>, <span class="number">16</span>,<span class="number">30</span>, <span class="number">33</span>,<span class="number">23</span>]  <span class="comment"># P3/8</span></span><br><span class="line">  - [<span class="number">30</span>,<span class="number">61</span>, <span class="number">62</span>,<span class="number">45</span>, <span class="number">59</span>,<span class="number">119</span>]  <span class="comment"># P4/16</span></span><br><span class="line">  - [<span class="number">116</span>,<span class="number">90</span>, <span class="number">156</span>,<span class="number">198</span>, <span class="number">373</span>,<span class="number">326</span>]  <span class="comment"># P5/32</span></span><br></pre></td></tr></table></figure>
+
+<p>首先，anchor box就是从训练集中真实框（ground truth）中统计或聚类得到的几个不同尺寸的框。避免模型在训练的时候盲目的找，有助于模型快速收敛。假设每个网格对应k个anchor，也就是模型在训练的时候，它只是会在每一个网格附近找出这k种形状，不会找其他的。</p>
+<p>anchor其实就是对预测的对象范围进行约束，并加入了尺寸先验经验，从而实现多尺度学习的目的。</p>
+<p>而对于yolov5l来说，输出为3个尺度的特征图，分别为13×13、26×26、52×52，对应着9个anchor，每个尺度均分3个anchor。</p>
+<blockquote>
+<p>最小的13×13的特征图上由于其感受野最大，应该使用大的anchor(116x90)，(156x198)，(373x326)，这几个坐标是针对原始输入的，即416×416的，因此要除以32把尺度缩放到13×3下使用，适合较大的目标检测。中等的26×26特征图上由于其具有中等感受野故应用中等的anchor box (30x61)，(62x45)，(59x119)，适合检测中等大小的目标。较大的33×23特征图上由于其具有较小的感受野故应用最小的anchor box(10x13)，(16x30)，(33x23)，适合检测较小的目标。具体使用就是每个grid cell都有3个anchor box。</p>
+</blockquote>
+<p>根据检测层来相应增加anchors。</p>
+<h3 id="backbone"><a href="#backbone" class="headerlink" title="backbone"></a>backbone</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">backbone:</span><br><span class="line">  <span class="comment"># [from, number, module, args]</span></span><br><span class="line">  [[-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">64</span>, <span class="number">6</span>, <span class="number">2</span>, <span class="number">2</span>]],  <span class="comment"># 0-P1/2</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">128</span>, <span class="number">3</span>, <span class="number">2</span>]],  <span class="comment"># 1-P2/4</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">128</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">256</span>, <span class="number">3</span>, <span class="number">2</span>]],  <span class="comment"># 3-P3/8</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">6</span>, C3, [<span class="number">256</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">512</span>, <span class="number">3</span>, <span class="number">2</span>]],  <span class="comment"># 5-P4/16</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">9</span>, C3, [<span class="number">512</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">1024</span>, <span class="number">3</span>, <span class="number">2</span>]],  <span class="comment"># 7-P5/32</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">1024</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, SPPF, [<span class="number">1024</span>, <span class="number">5</span>]],  <span class="comment"># 9</span></span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Bottleneck 可以译为“瓶颈层”。</li>
+<li>from列参数： <strong>-1</strong>代表是从上一层获得的输入 ， <strong>-2</strong>表示从上两层获得的输入 （head同理）。</li>
+<li>number列参数： 1表示只有一个，3表示有三个相同的模块。</li>
+<li>SPPF、Conv、Bottleneck、BottleneckCSP的代码可以在 <code>./models/common.py</code>中获取到。</li>
+<li>[64, 6, 2, 2]解析得到[3, 32, 3] ，输入为3（RGB），输出为32，卷积核k为3；<!--存疑，暂时没有太搞懂args里的参数--></li>
+<li>[128, 3, 2]这是固定的，128表示输出128个卷积核个数。根据[128, 3, 2]解析得到[32, 64, 3, 2] ，32是输入，64是输出（128×0.5&#x3D;64），3表示3×3的卷积核，2表示步长为2。</li>
+<li>主干网是图片从大到小，深度不断加深。</li>
+<li><code>args</code>这里的输入都省去了，因为输入都是上层的输出。为了修改过于麻烦，这里输入的获取是从.&#x2F;models&#x2F;yolo.py的 <code>def parse_model(md, ch)</code>函数中解析得到的。</li>
+</ol>
+<h3 id="head"><a href="#head" class="headerlink" title="head"></a>head</h3><p><strong>head检测头</strong>：一般表示的是经过主干网后输出的特征图，特征图输入head中进行检测，包括类别和位置的检测。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># YOLOv5 v6.0 head</span></span><br><span class="line">head:</span><br><span class="line">  [[-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">512</span>, <span class="number">1</span>, <span class="number">1</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, nn.Upsample, [<span class="literal">None</span>, <span class="number">2</span>, <span class="string">&#x27;nearest&#x27;</span>]],</span><br><span class="line">   [[-<span class="number">1</span>, <span class="number">6</span>], <span class="number">1</span>, Concat, [<span class="number">1</span>]],  <span class="comment"># cat backbone P4</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">512</span>, <span class="literal">False</span>]],  <span class="comment"># 13</span></span><br><span class="line"></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">256</span>, <span class="number">1</span>, <span class="number">1</span>]],</span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, nn.Upsample, [<span class="literal">None</span>, <span class="number">2</span>, <span class="string">&#x27;nearest&#x27;</span>]],</span><br><span class="line">   [[-<span class="number">1</span>, <span class="number">4</span>], <span class="number">1</span>, Concat, [<span class="number">1</span>]],  <span class="comment"># cat backbone P3</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">256</span>, <span class="literal">False</span>]],  <span class="comment"># 17 (P3/8-small)</span></span><br><span class="line"></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">256</span>, <span class="number">3</span>, <span class="number">2</span>]],</span><br><span class="line">   [[-<span class="number">1</span>, <span class="number">14</span>], <span class="number">1</span>, Concat, [<span class="number">1</span>]],  <span class="comment"># cat head P4</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">512</span>, <span class="literal">False</span>]],  <span class="comment"># 20 (P4/16-medium)</span></span><br><span class="line"></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">1</span>, Conv, [<span class="number">512</span>, <span class="number">3</span>, <span class="number">2</span>]],</span><br><span class="line">   [[-<span class="number">1</span>, <span class="number">10</span>], <span class="number">1</span>, Concat, [<span class="number">1</span>]],  <span class="comment"># cat head P5</span></span><br><span class="line">   [-<span class="number">1</span>, <span class="number">3</span>, C3, [<span class="number">1024</span>, <span class="literal">False</span>]],  <span class="comment"># 23 (P5/32-large)</span></span><br><span class="line"></span><br><span class="line">   [[<span class="number">17</span>, <span class="number">20</span>, <span class="number">23</span>], <span class="number">1</span>, Detect, [nc, anchors]],  <span class="comment"># Detect(P3, P4, P5)</span></span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
+
+<p>运行models文件夹下yolo.py文件，得到的解析图如下所示：<br><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220317165308.png"></p>
+<p>与上面的模型似乎不太一样。</p>
+<p>后面弄清楚了再来补充。</p>
+<h3 id="common-py"><a href="#common-py" class="headerlink" title="common.py"></a>common.py</h3><p>该部分是backbone各个模块参数讲解。</p>
+<h2 id="utils文件夹——工具包"><a href="#utils文件夹——工具包" class="headerlink" title="utils文件夹——工具包"></a>utils文件夹——工具包</h2><hr>
+<p>这三个文件夹都用的很少，需要用到时再做了解。</p>
+<h3 id="aws文件夹"><a href="#aws文件夹" class="headerlink" title="aws文件夹"></a>aws文件夹</h3><p>里面是一些跟其他语言对接的文件</p>
+<h3 id="flask-rest-api"><a href="#flask-rest-api" class="headerlink" title="flask_rest_api"></a>flask_rest_api</h3><p>存放了做后端API的一些例程代码和封装好的函数</p>
+<h3 id="loggers"><a href="#loggers" class="headerlink" title="loggers"></a>loggers</h3><p>终端需要打印任务信息的接口函数。</p>
+<hr>
+<h3 id="工具包函数"><a href="#工具包函数" class="headerlink" title="工具包函数"></a>工具包函数</h3><table>
+<thead>
+<tr>
+<th align="center">文件名</th>
+<th align="center">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">activations.py</td>
+<td align="center">激活函数</td>
+</tr>
+<tr>
+<td align="center">augmentations.py</td>
+<td align="center">图片增强函数</td>
+</tr>
+<tr>
+<td align="center">autoanchor.py</td>
+<td align="center">自动锚点工具函数</td>
+</tr>
+<tr>
+<td align="center">autobatch.py</td>
+<td align="center">自动批量处理工具</td>
+</tr>
+<tr>
+<td align="center">benchmarks.py</td>
+<td align="center">&#x2F;</td>
+</tr>
+<tr>
+<td align="center">callbacks.py</td>
+<td align="center">回调函数</td>
+</tr>
+<tr>
+<td align="center">datasets.py</td>
+<td align="center">用于数据加载和数据集的工具</td>
+</tr>
+<tr>
+<td align="center">downloads.py</td>
+<td align="center">下载工具</td>
+</tr>
+<tr>
+<td align="center">general.py</td>
+<td align="center">通用工具函数</td>
+</tr>
+<tr>
+<td align="center">loss.py</td>
+<td align="center">计算损失函数工具</td>
+</tr>
+<tr>
+<td align="center">metrics.py</td>
+<td align="center">模型验证函数</td>
+</tr>
+<tr>
+<td align="center">plots.py</td>
+<td align="center">可视化工具</td>
+</tr>
+<tr>
+<td align="center">torch_utils.py</td>
+<td align="center"><code>PyTorch</code>相关工具</td>
+</tr>
+</tbody></table>
+<h2 id="主目录下其他-py代码"><a href="#主目录下其他-py代码" class="headerlink" title="主目录下其他.py代码"></a>主目录下其他.py代码</h2><h3 id="detect-py"><a href="#detect-py" class="headerlink" title="detect.py"></a>detect.py</h3><p>对图像、视频、路径、流媒体等进行推理检测。  </p>
+<h3 id="export-py"><a href="#export-py" class="headerlink" title="export.py"></a>export.py</h3><p>导出<code>YOLOv5 PyTorch</code>模型到其他格式。如ONNX、OpenVINO、Core ML以及TensorFlow相关的格式。</p>
+<h3 id="train-py"><a href="#train-py" class="headerlink" title="train.py"></a>train.py</h3><p>训练程序，在自定义数据集上训练YOLOv5模型。</p>
+<h3 id="val-py"><a href="#val-py" class="headerlink" title="val.py"></a>val.py</h3><p>在自定义数据集上验证经过训练的YOLOv5模型的准确性 。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">方方土同学</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://pengjoy1106.top/2022/03/17/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/">http://pengjoy1106.top/2022/03/17/Yolov5学习笔记2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://pengjoy1106.top" target="_blank">方方土'Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/yolov5/">yolov5</a><a class="post-meta__tags" href="/tags/python/">python</a><a class="post-meta__tags" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/">计算机视觉</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/17/%E5%AE%9E%E7%94%A8%E8%BD%AF%E4%BB%B6%E3%80%81%E6%8F%92%E4%BB%B6%E5%92%8C%E8%84%9A%E6%9C%AC/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252243.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">实用软件、脚本和工具</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/16/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1%E5%AD%A6%E4%B9%A01/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252249.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">数学建模学习笔记1</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/03/15/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" title="YOLOv5学习笔记1"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252088.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-15</div><div class="title">YOLOv5学习笔记1</div></div></a></div><div><a href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04/" title="Yolov5学习笔记4——源码剖析——Head部分"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="title">Yolov5学习笔记4——源码剖析——Head部分</div></div></a></div><div><a href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05/" title="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252121.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="title">Yolov5学习笔记5——v5.0源码剖析——Backbone部分2</div></div></a></div><div><a href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03/" title="Yolov5学习笔记3——源码剖析——Backbone部分1"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696251947.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="title">Yolov5学习笔记3——源码剖析——Backbone部分1</div></div></a></div><div><a href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B06/" title="Yolov5学习笔记6——v6.0源码剖析——Backbone部分3"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252075.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="title">Yolov5学习笔记6——v6.0源码剖析——Backbone部分3</div></div></a></div><div><a href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B07/" title="Yolov5学习笔记7——v6.0源码剖析——Neck部分"><img class="cover" src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252102.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-25</div><div class="title">Yolov5学习笔记7——v6.0源码剖析——Neck部分</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="lv-container" data-id="city" data-uid="MTAyMC81NTgxMC8zMjI3NQ"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/kakarotto (8).jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">方方土同学</div><div class="author-info__description">你知道自己到底想要什么的。对吧？</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/PengJoy1106"><i class="fab fa-github"></i><span>关注</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/PengJoy1106" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:110644319@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">仅以此博客记录我的读研生活。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E6%A1%86%E6%9E%B6"><span class="toc-number">1.</span> <span class="toc-text">Yolov5学习笔记2——代码框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#data%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.1.</span> <span class="toc-text">data文件夹</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#hyps%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.1.1.</span> <span class="toc-text">hyps文件夹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#images%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.1.2.</span> <span class="toc-text">images文件夹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#scripts%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.1.3.</span> <span class="toc-text">scripts文件夹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96-yaml%E6%96%87%E4%BB%B6"><span class="toc-number">1.1.4.</span> <span class="toc-text">其他.yaml文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#model%E6%96%87%E4%BB%B6%E5%A4%B9%E2%80%94%E2%80%94%E6%A8%A1%E5%9E%8B%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.</span> <span class="toc-text">model文件夹——模型文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#yaml%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.1.</span> <span class="toc-text">.yaml介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parameters"><span class="toc-number">1.2.2.</span> <span class="toc-text">parameters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#anchors"><span class="toc-number">1.2.3.</span> <span class="toc-text">anchors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#backbone"><span class="toc-number">1.2.4.</span> <span class="toc-text">backbone</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#head"><span class="toc-number">1.2.5.</span> <span class="toc-text">head</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#common-py"><span class="toc-number">1.2.6.</span> <span class="toc-text">common.py</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#utils%E6%96%87%E4%BB%B6%E5%A4%B9%E2%80%94%E2%80%94%E5%B7%A5%E5%85%B7%E5%8C%85"><span class="toc-number">1.3.</span> <span class="toc-text">utils文件夹——工具包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#aws%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="toc-number">1.3.1.</span> <span class="toc-text">aws文件夹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flask-rest-api"><span class="toc-number">1.3.2.</span> <span class="toc-text">flask_rest_api</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#loggers"><span class="toc-number">1.3.3.</span> <span class="toc-text">loggers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E5%8C%85%E5%87%BD%E6%95%B0"><span class="toc-number">1.3.4.</span> <span class="toc-text">工具包函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E7%9B%AE%E5%BD%95%E4%B8%8B%E5%85%B6%E4%BB%96-py%E4%BB%A3%E7%A0%81"><span class="toc-number">1.4.</span> <span class="toc-text">主目录下其他.py代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#detect-py"><span class="toc-number">1.4.1.</span> <span class="toc-text">detect.py</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#export-py"><span class="toc-number">1.4.2.</span> <span class="toc-text">export.py</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#train-py"><span class="toc-number">1.4.3.</span> <span class="toc-text">train.py</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#val-py"><span class="toc-number">1.4.4.</span> <span class="toc-text">val.py</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" title="Deep_Learning学习笔记1"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deep_Learning学习笔记1"/></a><div class="content"><a class="title" href="/2022/03/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/" title="Deep_Learning学习笔记1">Deep_Learning学习笔记1</a><time datetime="2022-03-25T15:00:00.000Z" title="发表于 2022-03-25 23:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Depp_Learning%E5%AE%9E%E6%88%98%E8%AE%AD%E7%BB%831/" title="post文章配置模板"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252239.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="post文章配置模板"/></a><div class="content"><a class="title" href="/2022/03/25/Depp_Learning%E5%AE%9E%E6%88%98%E8%AE%AD%E7%BB%831/" title="post文章配置模板">post文章配置模板</a><time datetime="2022-03-25T15:00:00.000Z" title="发表于 2022-03-25 23:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04/" title="Yolov5学习笔记4——源码剖析——Head部分"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252204.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记4——源码剖析——Head部分"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04/" title="Yolov5学习笔记4——源码剖析——Head部分">Yolov5学习笔记4——源码剖析——Head部分</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05/" title="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696252121.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B05/" title="Yolov5学习笔记5——v5.0源码剖析——Backbone部分2">Yolov5学习笔记5——v5.0源码剖析——Backbone部分2</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03/" title="Yolov5学习笔记3——源码剖析——Backbone部分1"><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/1641696251947.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Yolov5学习笔记3——源码剖析——Backbone部分1"/></a><div class="content"><a class="title" href="/2022/03/25/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03/" title="Yolov5学习笔记3——源码剖析——Backbone部分1">Yolov5学习笔记3——源码剖析——Backbone部分1</a><time datetime="2022-03-25T12:00:00.000Z" title="发表于 2022-03-25 20:00:00">2022-03-25</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;undefined - 2022  <i id="heartbeat" class="fa fas fa-heartbeat"></i> 方方土同学</div><div class="footer_custom_text">💛所以你好，再见。💙</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">本地搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>function loadLivere () {
+  if (typeof LivereTower === 'object') {
+    window.LivereTower.init()
+  }
+  else {
+    (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+  }
+}
+
+if ('Livere' === 'Livere' || !true) {
+  if (true) btf.loadComment(document.getElementById('lv-container'), loadLivere)
+  else loadLivere()
+}
+else {
+  function loadOtherComment () {
+    loadLivere()
+  }
+}</script></div><div class="aplayer no-destroy" data-id="2914746287" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="false" data-lrctype=1 list-folded="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/click-heart.min.js" async="async" mobile="false"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
