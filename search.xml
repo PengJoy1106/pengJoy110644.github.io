@@ -4,6 +4,152 @@
   
     
     <entry>
+      <title>Deep_Learning学习笔记2|优化模型</title>
+      <link href="/2022/04/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/"/>
+      <url>/2022/04/25/Deep_Learning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02/</url>
+      
+        <content type="html"><![CDATA[<h1 id="Deep-Learning学习笔记2"><a href="#Deep-Learning学习笔记2" class="headerlink" title="Deep_Learning学习笔记2"></a>Deep_Learning学习笔记2</h1><h2 id="极简手写数字识别模型"><a href="#极简手写数字识别模型" class="headerlink" title="极简手写数字识别模型"></a>极简手写数字识别模型</h2><h3 id="基础模型：神经网络"><a href="#基础模型：神经网络" class="headerlink" title="基础模型：神经网络"></a>基础模型：神经网络</h3><ul><li>套用房价预测的模型</li><li>输入：由28*28改为784&#x2F;每个像素值</li><li>输出：1，预测的数据值</li></ul><h3 id="以类的方式组建网络"><a href="#以类的方式组建网络" class="headerlink" title="以类的方式组建网络"></a>以类的方式组建网络</h3><ul><li>初始化函数：定义每层的函数</li><li>Forward函数：层之间的串联方式</li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义mnist数据识别网络结构，同房价预测网络</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MNIST</span>(fluid.dygraph.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name_scope</span>):</span><br><span class="line">        <span class="built_in">super</span>(MNIST, self).__init__(name_scope)</span><br><span class="line">        name_scope = self.full_name()</span><br><span class="line">        <span class="comment"># 定义一层全连接层，输出维度是1,激活函数为None，即不使用激活函数</span></span><br><span class="line">        self.fc = Linear(input_dim=<span class="number">784</span>, output_dim=<span class="number">1</span>, act=<span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义网络结构的前向计算过程</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        outputs = self.fc(inputs)</span><br><span class="line">        <span class="keyword">return</span> outputs</span><br></pre></td></tr></table></figure><blockquote><p>input_dim设置为784,即输入为784</p><p>output_dim为1，即网络层数为1</p><p>act为None，即不使用激活函数</p><p>在init()中申明网络结构，在forward()函数中把这些结构串联，</p></blockquote><h3 id="训练过程"><a href="#训练过程" class="headerlink" title="训练过程"></a>训练过程</h3><ul><li><p>代码几乎与房价预测任务一致</p></li><li><p>包含四个部分：</p><ul><li>生成模型实例，设为“训练”状态</li><li>配置优化器，SGD Optimizer</li><li>两层循环的训练过程</li><li>保存模型参数，便于后续使用</li></ul></li><li><p>仅在向模型灌入数据的代码不同</p><ul><li>先转变成np.array格式</li><li>再转换成框架内置格式 to variable</li></ul></li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过with语句创建一个dygraph运行的context</span></span><br><span class="line"><span class="comment"># 动态图下的一些操作需要在guard下进行</span></span><br><span class="line"><span class="keyword">with</span> fluid.dygraph.guard():</span><br><span class="line">    model = MNIST(<span class="string">&quot;mnist&quot;</span>)</span><br><span class="line">    <span class="comment"># 启动训练模式</span></span><br><span class="line">    model.train()</span><br><span class="line">    <span class="comment"># 加载训练集 batch_size 设为 16</span></span><br><span class="line">    train_loader = paddle.batch(paddle.dataset.mnist.train(), batch_size=<span class="number">16</span>)</span><br><span class="line">    <span class="comment"># 定义优化器，使用随机梯度下降SGD优化器，学习率设置为0.001</span></span><br><span class="line">    optimizer = fluid.optimizer.SGDOptimizer(learning_rate=<span class="number">0.001</span>,parameter_list=model.parameters())</span><br><span class="line">    EPOCH_NUM = <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> epoch_id <span class="keyword">in</span> <span class="built_in">range</span>(EPOCH_NUM):</span><br><span class="line">        <span class="keyword">for</span> batch_id, data <span class="keyword">in</span> <span class="built_in">enumerate</span>(train_loader()):</span><br><span class="line">            <span class="comment"># 准备数据并转化成符合框架要求的格式</span></span><br><span class="line">            image_data = np.array([x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> data]). astype(<span class="string">&#x27;float32&#x27;</span>)</span><br><span class="line">            label_data = np.array([x[<span class="number">1</span>] <span class="keyword">for</span> x <span class="keyword">in</span> data]). astype(<span class="string">&#x27;float32&#x27;</span>).reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">            <span class="comment"># 将格式转为飞桨动态图格式</span></span><br><span class="line">            image = fluid.dygraph.to_variable(image_data)</span><br><span class="line">            label = fluid.dygraph.to_variable(label_data)</span><br><span class="line">            <span class="comment"># 前向计算的过程</span></span><br><span class="line">            predict = model(image)</span><br><span class="line">            <span class="comment"># 计算损失</span></span><br><span class="line">            loss = fluid.layers.square_error_cost(predict, label)</span><br><span class="line">            avg_loss = fluid.layers.mean(loss)</span><br><span class="line">            <span class="comment"># 每训练了1000批次的数据，打印下当前Loss的情况</span></span><br><span class="line">            <span class="keyword">if</span> batch_id != <span class="number">0</span> <span class="keyword">and</span> batch_id % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;epoch_id: &#123;&#125;, batch_id: &#123;&#125;, loss is: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(epoch_id, batch_id, avg_loss.numpy()))</span><br><span class="line">            <span class="comment"># 后向传播，更新参数的过程</span></span><br><span class="line">            avg_loss.backward()</span><br><span class="line">            optimizer.minimize(avg_loss)</span><br><span class="line">            model.clear_gradients()</span><br><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line">fluid.save_dygraph(model.state_dict(),<span class="string">&#x27;mnist1&#x27;</span>)</span><br></pre></td></tr></table></figure><p>每训练1000批次打印的Loss数据如下:</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331155448.png"></p><p>可以看出训练的效果并不好</p><ul><li>Loss的值并没有在1以下，甚至有的还超过3</li><li>从epoch0到epoch9，Loss值总体上下降趋势并不明显</li></ul><h3 id="测试效果"><a href="#测试效果" class="headerlink" title="测试效果"></a>测试效果</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 测试效果</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_image</span>(<span class="params">img_path</span>):</span><br><span class="line">    im = Image.<span class="built_in">open</span>(img_path).convert(<span class="string">&#x27;L&#x27;</span>)</span><br><span class="line">    <span class="comment"># print(np.array(im))</span></span><br><span class="line">    im = im.resize((<span class="number">28</span>, <span class="number">28</span>), Image.ANTIALIAS)</span><br><span class="line">    im = np.array(im).reshape(<span class="number">1</span>, -<span class="number">1</span>).astype(np.float32)</span><br><span class="line">    im = <span class="number">2</span> - im / <span class="number">127.5</span></span><br><span class="line">    <span class="keyword">return</span> im</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义预测过程</span></span><br><span class="line"><span class="keyword">with</span> fluid.dygraph.guard():</span><br><span class="line">    model = MNIST(<span class="string">&quot;mnist&quot;</span>)</span><br><span class="line">    params_file_path = <span class="string">&#x27;mnist3&#x27;</span></span><br><span class="line">    img_path = <span class="string">&#x27;./work/example_0.jpg&#x27;</span></span><br><span class="line">    <span class="comment"># 加载数据模型</span></span><br><span class="line">    model_dict, _ = fluid.load_dygraph(<span class="string">&quot;mnist3&quot;</span>)</span><br><span class="line">    model.load_dict(model_dict)</span><br><span class="line"></span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    tensor_img = load_image(img_path)</span><br><span class="line">    result = model(fluid.dygraph.to_variable(tensor_img))</span><br><span class="line">    <span class="comment"># 预测输出取整，即为预测的数字</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;本次预测的数字是:&quot;</span>,result.numpy().astype(<span class="string">&#x27;int32&#x27;</span>))</span><br></pre></td></tr></table></figure><p>预测的结果如下图所示:</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331161622.png"></p><p>显然是不准确的</p><h2 id="优化版手写数字识别模型"><a href="#优化版手写数字识别模型" class="headerlink" title="优化版手写数字识别模型"></a>优化版手写数字识别模型</h2><h3 id="网络模型"><a href="#网络模型" class="headerlink" title="网络模型"></a>网络模型</h3><h4 id="多层感知机"><a href="#多层感知机" class="headerlink" title="多层感知机"></a>多层感知机</h4><ul><li><p>代码如下：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义多层全连接神经网络</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MNIST</span>(paddle.nn.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MNIST, self).__init__()</span><br><span class="line">        <span class="comment"># 定义两层全连接隐含层，输出维度是10，当前设定隐含节点数为10，可根据任务调整</span></span><br><span class="line">        self.fc1 = Linear(in_features=<span class="number">784</span>, out_features=<span class="number">10</span>)</span><br><span class="line">        self.fc2 = Linear(in_features=<span class="number">10</span>, out_features=<span class="number">10</span>)</span><br><span class="line">        <span class="comment"># 定义一层全连接输出层，输出维度是1</span></span><br><span class="line">        self.fc3 = Linear(in_features=<span class="number">10</span>, out_features=<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 定义网络的前向计算，隐含层激活函数为sigmoid，输出层不使用激活函数</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="comment"># inputs = paddle.reshape(inputs, [inputs.shape[0], 784])</span></span><br><span class="line">        outputs1 = self.fc1(inputs)</span><br><span class="line">        outputs1 = F.sigmoid(outputs1)</span><br><span class="line">        outputs2 = self.fc2(outputs1)</span><br><span class="line">        outputs2 = F.sigmoid(outputs2)</span><br><span class="line">        outputs_final = self.fc3(outputs2)</span><br><span class="line">        <span class="keyword">return</span> outputs_final</span><br></pre></td></tr></table></figure><blockquote><ul><li>输入层的尺度为28×28，但批次计算的时候会统一加1个维度（大小为batch size）。</li><li>中间的两个隐含层为10×10的结构，激活函数使用常见的Sigmoid函数。</li><li>与房价预测模型一样，模型的输出是回归一个数字，输出层的尺寸设置成1。</li></ul></blockquote></li><li><p>训练效果</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331200615.png"></p></li></ul><h4 id="卷积神经网络"><a href="#卷积神经网络" class="headerlink" title="卷积神经网络"></a>卷积神经网络</h4><ul><li><p>代码如下</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 多层卷积神经网络实现</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MNIST</span>(paddle.nn.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(MNIST, self).__init__()</span><br><span class="line">        <span class="comment"># 定义卷积层，输出特征通道out_channels设置为20，卷积核的大小kernel_size为5，卷积步长stride=1，padding=2</span></span><br><span class="line">        self.conv1 = Conv2D(in_channels=<span class="number">1</span>, out_channels=<span class="number">20</span>, kernel_size=<span class="number">5</span>, stride=<span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 定义池化层，池化核的大小kernel_size为2，池化步长为2</span></span><br><span class="line">        self.max_pool1 = MaxPool2D(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 定义卷积层，输出特征通道out_channels设置为20，卷积核的大小kernel_size为5，卷积步长stride=1，padding=2</span></span><br><span class="line">        self.conv2 = Conv2D(in_channels=<span class="number">20</span>, out_channels=<span class="number">20</span>, kernel_size=<span class="number">5</span>, stride=<span class="number">1</span>, padding=<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 定义池化层，池化核的大小kernel_size为2，池化步长为2</span></span><br><span class="line">        self.max_pool2 = MaxPool2D(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 定义一层全连接层，输出维度是1</span></span><br><span class="line">        self.fc = Linear(input_dim=<span class="number">980</span>, output_dim=<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 定义网络前向计算过程，卷积后紧接着使用池化层，最后使用全连接层计算最终输出</span></span><br><span class="line">    <span class="comment"># 卷积层激活函数使用Relu，全连接层不使用激活函数</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        x = self.conv1(inputs)</span><br><span class="line">        x = F.relu(x)</span><br><span class="line">        x = self.max_pool1(x)</span><br><span class="line">        x = self.conv2(x)</span><br><span class="line">        x = F.relu(x)</span><br><span class="line">        x = self.max_pool2(x)</span><br><span class="line">        x = paddle.reshape(x, [x.shape[<span class="number">0</span>], -<span class="number">1</span>])</span><br><span class="line">        x = self.fc(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></li><li><p>训练结果如下</p></li></ul><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331201203.png"></p><p><strong>比较经典全连接神经网络和卷积神经网络的损失变化，可以发现卷积神经网络的损失值下降更快，且最终的损失值更小。</strong></p><h3 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h3><h4 id="均方误差"><a href="#均方误差" class="headerlink" title="均方误差"></a>均方误差</h4><p>上述卷积神经网络的模型的损失函数用的即为均方误差。</p><h4 id="交叉熵——sigmoid"><a href="#交叉熵——sigmoid" class="headerlink" title="交叉熵——sigmoid()"></a>交叉熵——sigmoid()</h4><p>修改计算损失的函数:</p><ul><li>从：<code>loss = paddle.nn.functional.square_error_cost(predict, label)</code></li><li>到：<code>loss = paddle.nn.functional.cross_entropy(predict, label)</code></li></ul><p>训练结果如下：</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331210432.png"></p><h3 id="优化算法"><a href="#优化算法" class="headerlink" title="优化算法"></a>优化算法</h3><p>在深度学习神经网络模型中，通常使用标准的随机梯度下降算法更新参数，学习率代表参数更新幅度的大小，即步长。当学习率最优时，模型的有效容量最大，最终能达到的效果最好。学习率和深度学习任务类型有关，合适的学习率往往需要大量的实验和调参经验。探索学习率最优值时需要注意如下两点：</p><ul><li><strong>学习率不是越小越好</strong>。学习率越小，损失函数的变化速度越慢，意味着我们需要花费更长的时间进行收敛，如 <strong>图2</strong> 左图所示。</li><li><strong>学习率不是越大越好</strong>。只根据总样本集中的一个批次计算梯度，抽样误差会导致计算出的梯度不是全局最优的方向，且存在波动。在接近最优解时，过大的学习率会导致参数在最优解附近震荡，损失难以收敛，如 <strong>图2</strong> 右图所示。</li></ul><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331210808.png"></p><h4 id="设置学习率"><a href="#设置学习率" class="headerlink" title="设置学习率"></a>设置学习率</h4><p>在训练前，我们往往不清楚一个特定问题设置成怎样的学习率是合理的，因此在训练时可以尝试调小或调大，通过观察Loss下降的情况判断合理的学习率，设置学习率的代码如下所示。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置不同初始学习率</span></span><br><span class="line">opt = paddle.optimizer.SGD(learning_rate=<span class="number">0.001</span>, parameters=model.parameters())</span><br><span class="line"><span class="comment"># opt = paddle.optimizer.SGD(learning_rate=0.0001, parameters=model.parameters())</span></span><br><span class="line"><span class="comment"># opt = paddle.optimizer.SGD(learning_rate=0.01, parameters=model.parameters())</span></span><br></pre></td></tr></table></figure><h4 id="学习率的主流优化算法"><a href="#学习率的主流优化算法" class="headerlink" title="学习率的主流优化算法"></a>学习率的主流优化算法</h4><p>学习率是优化器的一个参数，调整学习率看似是一件非常麻烦的事情，需要不断的调整步长，观察训练时间和Loss的变化。经过研究员的不断的实验，当前已经形成了四种比较成熟的优化算法：SGD、Momentum、AdaGrad和Adam，效果如下图所示。</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220331211905.png"></p><ul><li><strong>SGD</strong>： 随机梯度下降算法，每次训练少量数据，抽样偏差导致的参数收敛过程中震荡。</li><li><strong>Momentum</strong>： 引入物理“动量”的概念，累积速度，减少震荡，使参数更新的方向更稳定。</li></ul><blockquote><p>每个批次的数据含有抽样误差，导致梯度更新的方向波动较大。如果我们引入物理动量的概念，给梯度下降的过程加入一定的“惯性”累积，就可以减少更新路径上的震荡，即每次更新的梯度由“历史多次梯度的累积方向”和“当次梯度”加权相加得到。历史多次梯度的累积方向往往是从全局视角更正确的方向，这与“惯性”的物理概念很像，也是为何其起名为“Momentum”的原因。类似不同品牌和材质的篮球有一定的重量差别，街头篮球队中的投手（擅长中远距离投篮）喜欢稍重篮球的比例较高。一个很重要的原因是，重的篮球惯性大，更不容易受到手势的小幅变形或风吹的影响。</p></blockquote><ul><li><strong>AdaGrad</strong>： 根据不同参数距离最优解的远近，动态调整学习率。学习率逐渐下降，依据各参数变化大小调整学习率。</li></ul><blockquote><p>通过调整学习率的实验可以发现：当某个参数的现值距离最优解较远时（表现为梯度的绝对值较大），我们期望参数更新的步长大一些，以便更快收敛到最优解。当某个参数的现值距离最优解较近时（表现为梯度的绝对值较小），我们期望参数的更新步长小一些，以便更精细的逼近最优解。类似于打高尔夫球，专业运动员第一杆开球时，通常会大力打一个远球，让球尽量落在洞口附近。当第二杆面对离洞口较近的球时，他会更轻柔而细致的推杆，避免将球打飞。与此类似，参数更新的步长应该随着优化过程逐渐减少，减少的程度与当前梯度的大小有关。根据这个思想编写的优化算法称为“AdaGrad”，Ada是Adaptive的缩写，表示“适应环境而变化”的意思。RMSProp是在AdaGrad基础上的改进，学习率随着梯度变化而适应，解决AdaGrad学习率急剧下降的问题。</p></blockquote><ul><li><strong>Adam</strong>： 由于动量和自适应学习率两个优化思路是正交的，因此可以将两个思路结合起来，这就是当前广泛应用的算法。</li></ul><h4 id="利用不同的优化算法训练模型"><a href="#利用不同的优化算法训练模型" class="headerlink" title="利用不同的优化算法训练模型"></a>利用不同的优化算法训练模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#四种优化算法的设置方案，可以逐一尝试效果</span></span><br><span class="line">    opt = paddle.optimizer.SGD(learning_rate=<span class="number">0.01</span>, parameters=model.parameters())</span><br><span class="line">    <span class="comment"># opt = paddle.optimizer.Momentum(learning_rate=0.01, momentum=0.9, parameters=model.parameters())</span></span><br><span class="line">    <span class="comment"># opt = paddle.optimizer.Adagrad(learning_rate=0.01, parameters=model.parameters())</span></span><br><span class="line">    <span class="comment"># opt = paddle.optimizer.Adam(learning_rate=0.01, parameters=model.parameters())</span></span><br></pre></td></tr></table></figure><h3 id="超参数"><a href="#超参数" class="headerlink" title="超参数"></a>超参数</h3><p>在深度学习中，超参数有很多，比如学习率α、使用momentum或Adam优化算法的参数（β1，β2，ε）、层数layers、不同层隐藏单元数hidden units、学习率衰退、mini&#x3D;batch的大小等。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 深度学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> CNN </tag>
+            
+            <tag> deep_learning </tag>
+            
+            <tag> python </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>碎碎念1</title>
+      <link href="/2022/04/09/%E7%A2%8E%E7%A2%8E%E5%BF%B51/"/>
+      <url>/2022/04/09/%E7%A2%8E%E7%A2%8E%E5%BF%B51/</url>
+      
+        <content type="html"><![CDATA[<p>所以你读了几篇论文？<br>写了几段代码？<br>真正思考过什么东西？<br>你真的没有在努力。</p><p>只要我还在一直读书，我就能够一直理解自己的痛苦。<br>一直与自己的无知、狭隘、偏见、阴暗见招拆招。<br>很多人说：“和自己握手言和”，<br>我不要做这样的人，我要拿着石头打磨我这块石头。<br>会一直读书，一直痛苦，一直爱着从痛苦荒芜里生出来的喜悦。<br>乘兴而来，尽兴而归，在一生中，这是很难得很难得的一件事情。</p><p>再后来我知道阅读只是理解世界的一种方式，<br>如果你有其他的方式与世界产生沟通，进行理解，<br>被世界在风雨雷电中触动，那甚至不读书也行，<br>不是必须要走的路，也不是那条路比另一条路高级，<br>你需要做的甚至也不是阅读，是与世界产生对话，理解自己所在的时代。</p><p>你知道你最大的问题是什么么？<br>误认为自己有无限的时间和无限的可能，又不知道自己需要努力的方向在哪里。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 浮生录 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>mAP值解析</title>
+      <link href="/2022/04/06/Yolov5%E6%94%AF%E7%BA%BF%E5%AD%A6%E4%B9%A0%E4%B9%8BmAP%E5%80%BC/"/>
+      <url>/2022/04/06/Yolov5%E6%94%AF%E7%BA%BF%E5%AD%A6%E4%B9%A0%E4%B9%8BmAP%E5%80%BC/</url>
+      
+        <content type="html"><![CDATA[<h1 id="目标检测算法评价指标——mAP值"><a href="#目标检测算法评价指标——mAP值" class="headerlink" title="目标检测算法评价指标——mAP值"></a>目标检测算法评价指标——mAP值</h1><blockquote><p>mAP值即为平均精度，是衡量目标检测算法优劣的常用指标。<br>AP（平均精度）是衡量目标检测算法好坏的常用指标，在Faster R-CNN，SSD等算法中作为评估指标。<br>AP等于recall值取0-1时，precision值的平均值。</p></blockquote><h2 id="Precision-amp-Recall-查准率和查全率"><a href="#Precision-amp-Recall-查准率和查全率" class="headerlink" title="Precision &amp; Recall(查准率和查全率)"></a>Precision &amp; Recall(查准率和查全率)</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p> <strong>Precision</strong>：衡量你的模型预测准确度。即预测的数目中正确的百分比。</p><blockquote><p>例：你预测100个图片是苹果，其中80个真的是苹果，那么你的Precision为0.8</p></blockquote><p><strong>recall</strong>：召回表示预测正确的目标数量。</p><blockquote><p>例：总共有100张苹果图片，你成功找到其中50张，那么你的recall为0.5</p></blockquote><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>以二分类结果为例：</p><p>对于二分类问题，可将样例根据其真实类别与学习器预测类别的组合划分为<strong>真正例(true positive)<strong>、</strong>假正例(false positive)<strong>、</strong>真反例(true negative)<strong>、</strong>假反例(false negative)<strong>四种情形，令</strong>TP</strong>、<strong>FP</strong>、<strong>TN</strong>、<strong>FN</strong>分别表示其对应的样例数，则显然有<strong>TP+FP+TN+FN&#x3D;样例总数</strong>。分类结果的“混淆矩阵”(confusion matrix)如表所示：</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220409165719.png"></p><p>查准率P和查全率R分别定义为：</p><p>$ P &#x3D; \frac{TP}{TP+FP}$        $R &#x3D; \frac{TP}{TP+FN}$</p><p>一般来说查准率高时，查全率往往偏低；而查全率高时，查准率往往偏低。</p><p><strong>平衡点(BER):查准率&#x3D;查全率时的取值,用来比较模型好坏.</strong> </p><h2 id="交并比-IoU"><a href="#交并比-IoU" class="headerlink" title="交并比(IoU)"></a>交并比(IoU)</h2><p>IoU是预测框与ground truth的交集和并集的比值。</p><p>为了计算precision和recall，与所有机器学习问题一样，我们必须鉴别出<strong>True Positives</strong>（真正例）、<strong>False Positives</strong>（假正例）、<strong>True Negatives</strong>（真负例）和 <strong>False Negatives</strong>（假负例）。</p><p>假设边界框对应的IoU大于某个阈值（一般来说，比较常用的IoU阈值是0.5），我们就可以说这个预测的边界框是对的，或者说可以被划分为TP中。反之如果IoU小于阈值，那么这个预测的边界框就是错的，或者说是一个FP。如果对于图像中某个物体来说，我们的模型没有预测出对应的边界框，那么这种情况就可以被记为一次FN。</p><ul><li><strong>True Positive (TP)</strong>: IOU&gt;&#x3D;阈值的检测框</li><li><strong>False Positive (FP)</strong>: IOU&lt;阈值的检测框</li><li><strong>False Negative (FN)</strong>: 未被检测到的GT</li><li><strong>True Negative (TN)</strong>: 忽略不计</li></ul><p>对于每一个图片，ground truth数据会给出该图片中各个类别的实际物体数量。我们可以计算每个Positive预测框与ground truth的IoU值，并取最大的IoU值，认为该预测框检测到了那个IoU最大的ground truth。然后根据IoU阈值，我们可以计算出一张图片中各个类别的正确检测值（True Positives, TP）数量以及错误检测值数量（False Positives, FP）。</p><p>既然我们已经得到了正确的预测值数量（True Positives），也很容易计算出漏检的物体数（False Negatives, FN）。</p><h2 id="AP值"><a href="#AP值" class="headerlink" title="AP值"></a>AP值</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p><strong>PR曲线下面积的近似，是一个0~1之间的数值，也可用来衡量模型的performance</strong>。</p><ul><li>PR曲线比较直观，但由于曲线的上下震荡，不方便比较不同模型的PR曲线</li><li>AP是一个数字，模型的AP大，则模型更好，方便比较不同模型</li></ul><h3 id="计算方法"><a href="#计算方法" class="headerlink" title="计算方法"></a>计算方法</h3><p>计算AP值，一般有两种方法：</p><ol><li><p>11点插值法：</p><p>选取当Recall &gt;&#x3D; 0, 0.1, 0.2, …, 1共11个点时的Precision最大值，AP是这11个Precision的平均值，此时只由11个点去近似PR曲线下面积。<br>$$<br>AP &#x3D; \frac{1}{11}\sum_{r\in(0,0,,1…1)}\rho_{interp(r)}<br>$$</p><p>$$<br>\rho_{interp(r)} &#x3D; max_{\widetilde{r}:\widetilde{r}\geq{r}}\rho(\widetilde{r})<br>$$</p></li><li><p>所有点插值法：</p><p>针对每一个不同的Recall值（包括0和1），选取其大于等于这些Recall值时的Precision最大值，然后计算PR曲线下面积作为AP值：<br>$$<br>\sum_{r&#x3D;0}^{1}(r_{n+1}-r_n)\rho_{interp}(r_{n+1})<br>$$</p><p>$$<br>\rho_{interp(r)} &#x3D; max_{\widetilde{r}:\widetilde{r}\geq{r}}\rho(\widetilde{r})<br>$$</p><p>由于此方法用了所有点去近似PR曲线下面积，计算的AP比11点插值法更准确。</p></li></ol><h2 id="mAP-mean-Average-Precision-即各类别AP的平均值"><a href="#mAP-mean-Average-Precision-即各类别AP的平均值" class="headerlink" title="mAP(mean Average Precision, 即各类别AP的平均值)"></a>mAP(mean Average Precision, 即各类别AP的平均值)</h2><p>对于各个类别，分别按照上述方式计算AP，取所有类别的AP平均值就是mAP。这就是在目标检测问题中mAP的计算方法。可能有时会发生些许变化，如COCO数据集采用的计算方式更严格，其计算了不同IoU阈值和物体大小下的AP.</p><p><strong>在评测时，COCO评估了在不同的交并比(IoU)[0.5:0.05:0.95]共10个IoU下的AP，并且在最后以这些阈值下的AP平均作为结果，记为mAP@[.5, .95]。</strong></p><p>而在Pascal VOC中，检测结果只评测了IOU在0.5这个阈值下的AP值。因此相比VOC而言，COCO数据集的评测会更加全面：不仅评估到物体检测模型的分类能力，同时也能体现出检测模型的定位能力。因此在IoU较大如0.8时，预测框必须和真实的框具有很大的重叠比才能被视为正确。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 计算机视觉 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>文献阅读3|EfficientNet</title>
+      <link href="/2022/04/04/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB3/"/>
+      <url>/2022/04/04/%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB3/</url>
+      
+        <content type="html"><![CDATA[<h1 id="文献阅读3-EfficientNet-Rethinking-Model-Scaling-for-Convolutional-Neural-Networks"><a href="#文献阅读3-EfficientNet-Rethinking-Model-Scaling-for-Convolutional-Neural-Networks" class="headerlink" title="文献阅读3|EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks"></a>文献阅读3|EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks</h1><h2 id="Intrudoction"><a href="#Intrudoction" class="headerlink" title="Intrudoction"></a>Intrudoction</h2><p>在论文中，作者介绍了<strong>放大卷积神经网络</strong>是一种常见的提高模型准确率的方法。但是在传统的方法中，通常只是在某单一维度上进行放大（<strong>宽度width</strong>，<strong>深度depth</strong>，<strong>图片分辨率resolution</strong>），宽度就是网络中的过滤器的数量，因为增加了过滤器的数量，该层的输出的通道数就相应变大了，深度可以理解为整个网络结构的长度，即网络中layer的数量。那么为什么在这几个维度上进行放大可以提高准确率？因为增加了图片的分辨率或则增加了网络的宽度，网络就能够捕获到更过细节的特征，而增加网络的深度能够捕获到更丰富和更复杂的特征。<br>虽然也可以任意的放大两个或三个维度，但是因为维度变多，设计空间也随之变大，因此随意的放大多个维度需要耗费较大的人力来调整，并且也通常会一个次优的精度和效率。因此作者通过研究实验提出了一种新的缩放方法——复合缩放方法(compound scaling method)。</p><p>在一些手工设计网络中(如AlexNET、VGG、ResNet等)，我们常常会有这样的疑问：为什么输入图像分辨率要固定为224，为什么卷积的个数要设置为这个值？为什么网络的深度设为这么深？这些问题你要问设计作者的话，估计回复就四个字——工程经验。<br>这篇论文使用NAS(Neural Architecture Search)技术来搜索网络的图像输入分辨率r，网络的深度depth，以及channel的宽度width三个参数的合理化配置。<br>        EfficientNetB0到B7与其他网络的对比如下图所示:</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402161317.png"></p><p>为什么在这几个维度上进行放大可以提高准确率呢？因为增加了图片的分辨率或则增加了网络的宽度，网络就能够捕获到更过细节的特征，而增加网络的深度能够捕获到更丰富和更复杂的特征。</p><p>虽然也可以任意的放大两个或三个维度，但是因为维度变多，设计空间也随之变大，因此随意的放大多个维度需要耗费较大的人力来调整，并且也通常会有一个次优的精度和效率。因此作者通过研究实验提出了一种新的缩放方法——**复合缩放方法(compound scaling method)**。<br>下图所展示的便是放大神经网络的几种方法：</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402162025.png"></p><p>在之前的论文中，有的会通过增加网络的<strong>width</strong>即增加卷积核的个数(增加特征矩阵的<strong>channels</strong>)来提升网络的性能(上图b)，有的会通过增加网络的<strong>深度</strong>即<strong>使用更多的层结构</strong>来提升网络的性能(上图c)，有的会通过增加输入网络的分辨率来提升网络的性能(上图d)。而在本篇论文中会同时增加网络的<strong>width</strong>、网络的<strong>深度</strong>以及输入网络的<strong>分辨率</strong>来提升网络的性能(上图e)</p><p>但是因为网络结构的缩放并不会改变具体某一层的卷积操作，所以一个良好的基线网络是必须的，作者在论文中也提出了一种新的基线网络结构——<strong>EfficientNet</strong>。</p><h2 id="compound-scaling-method"><a href="#compound-scaling-method" class="headerlink" title="compound scaling method"></a>compound scaling method</h2><h3 id="论文思想"><a href="#论文思想" class="headerlink" title="论文思想"></a>论文思想</h3><ul><li><p><strong>Depth（d）</strong>：缩放网络深度是许多卷积网络中最常用的方法。<em>更深的卷积网络能够捕获到更丰富和复杂的特征，但是更深的网络由于存在<strong>梯度消失</strong>的问题而难以训练。</em>尽管有一些方法可以解决梯度消失（例如 跨层连接skip connections和批量归一化 batch normalization），但是对于非常深的网络所获得的准确率的增益会减弱。例如ResNet-1000和ResNet-101有着相近的准确率尽管depth相差很大。<em>下图的中间的曲线图表示用不同的深度系数d缩放模型的准确率曲线，并且表明了对于非常深的网络，准确率的增益会减弱。</em></p><blockquote><p>The intuition is that deeper ConvNet can capture richer and more complex features, and generalize well on new tasks. However, deeper networks are also more difficult to train due to the vanishing gradient problem</p></blockquote></li><li><p><strong>Width（w）</strong>：缩放网络宽度对于小规模的网络也是很常用的一种方式。<em>更宽的网络更能够捕捉到更多细节的特征，也更容易训练。</em>很宽但很浅的网络结构很难捕捉到更高层次的特征。<em>下图中左边的曲线图则是作者的不同宽度系数实验结果曲线，当w不断增大的时候，准确率很快就饱和了。</em></p><blockquote><p>wider networks tend to be able to capture more fine-grained features and are easier to train. However, extremely wide but shallow networks tend to have difficulties in capturing higher level features.</p></blockquote></li><li><p><strong>Resolution（r）</strong>：使用更高分辨率的图像，网络能够捕获到更细粒度的特模式。增加输入网络的图像分辨率能够潜在得获得更高细粒度的特征模板，但对于非常高的输入分辨率，<em>准确率的增益也会减小，并且大分辨率图像会增加计算量</em>。<em>下图中右边的曲线图则是作者的不同分辨率系数实验结果曲线，对于非常高分辨率的图像，准确率的增益会减弱。（r&#x3D;1.0表示224x224，r&#x3D;2.5表示560x560）。</em></p><blockquote><p>With higher resolution input images, ConvNets can potentially capture more fine-grained patterns. but the accuracy gain diminishes for very high resolutions.</p></blockquote></li></ul><p>下图展示了在基准<strong>EfficientNetB-0</strong>上分别增加<strong>width</strong>、<strong>depth</strong>以及<strong>resolution</strong>后得到的统计结果。通过下图可以看出大概在Accuracy达到80%时就趋于饱和了。</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402203414.png"></p><p>通过以上实验得出<strong>结论1：对网络深度、宽度和分辨率中的任一维度进行缩放都可以提高精度，但是当模型非常大时，这种放大的增益都会减弱</strong>。</p><p>接着作者又做了一个实验，采用不同的d , r 组合，然后不断改变网络的width就得到了如下图所示的4条曲线，通过分析可以发现在相同的FLOPs下，同时增加d和r的效果最好。</p><h3 id="复合缩放Compound-Scaling"><a href="#复合缩放Compound-Scaling" class="headerlink" title="复合缩放Compound Scaling"></a>复合缩放<strong>Compound Scaling</strong></h3><blockquote><p>作者通过实验发现缩放的各个维度并不是独立的。直观上来讲，对于分辨率更高的图像，我们应该增加网络深度，因为需要更大的感受野来帮助捕获更多像素点的类似特征。为了证明这种猜测，作者做了一下相关实验：比较宽度缩放在不同深度和分辨率之下对准确率的影响。</p></blockquote><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402204530.png"></p><p><em>通过上图的结果我们可以看到d&#x3D;2.0，r&#x3D;1.3时宽度缩放在相同flops下有着更高的准确率。</em><br>得到<strong>结论2：为了达到更好的准确率和效率，在缩放时平衡网络所有维度至关重要。</strong></p><p>为了方便后续理解，我们先看下论文中通过<strong>NAS</strong>(<strong>Neural Architecture Search</strong>)技术搜索得到的EfficientNetB0的结构，如下图所示，整个网络框架由一系列Stage，$\widehat{Fi}$表示对应stage的运算操作，$\widehat{Li}$表示在该stage中重复$\widehat{Fi}$的次数：</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402210952.png"></p><p>作者在论文中对整个网络的运算进行抽象：$N(d,\omega,r) &#x3D; ^{\bigodot}<em>{i&#x3D;1…s}F_i^{L_i}(X</em>{<H_iW_iC_i>})$</p><p>其中：</p><ul><li>$ ^{\bigodot}_{i&#x3D;1…s}$表示连乘运算</li><li>$F_i$表示一个运算操作(如上图中的<strong>operator</strong>)，那么$F_i^{L_i}$表示在Stage_i中$F_i$运算被重复执行$L_i$次。</li><li>X表示输入Stage_i的特征矩阵(<strong>input tensor</strong>)</li><li>$&lt;H_i,W_i,C_i&gt;$表示X的高度，宽度以及<strong>Channels</strong>(<strong>shape</strong>)。</li></ul><p>为了探究d,r,w这三个因子对最终准确率的影响，作者将d,r,w加到公式中，我们可以得到抽象化后的优化问题(在指定资源限制下)，其中s.t.代表限制条件：</p><blockquote><p>Our target is to maximize the model accuracy for any given resource constraints, which can be formulated as an optimization problem:</p></blockquote><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220403140239.png"></p><p>其中：</p><ul><li>d用来缩放深度$\widehat{Li}$</li><li>r用来缩放分辨率即影响$\widehat{Hi}$和$\widehat{Wi}$</li><li>$\omega$用来缩放特征矩阵的channel即$\widehat{Ci}$</li><li>target_memory为memory限制</li><li>target_flops为FlOPs限制</li></ul><p>然后，作者又提出了一种新的复合缩放方法使用了一个复合系数<strong>ϕ</strong> ，通过这个系数按照以下原则来统一的缩放<strong>网络深度</strong>、<strong>宽度</strong>和<strong>分辨率</strong>：</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220402204755.png"></p><p>这里：</p><ul><li>FLOPs(理论计算量)与depth的关系是：当depth翻倍，FLOPs也翻倍。</li><li>FLOPs与width的关系是：当width翻倍(即channel翻倍)，FLOPs会翻4倍，因为卷积层的FLOPs约等于$feature_\omega \times feature_h \times feature_c \times kernel_\omega \times kernel_h \times kernel_{number}$(假设输入输出特征矩阵的高宽不变)，当width翻倍，输入特征矩阵的channels($feature_c$)和输出特征矩阵的channel或卷积核的个数($kernel_{number}$)都会翻倍，所以FLOPs会翻4倍。</li><li>FLOPs与resolution的关系是：当resolution翻倍，FLOPs也会翻4倍，和上面类似因为特征矩阵的宽度$feature_\omega$和特征矩阵的高度$feature_h$都会翻倍。</li></ul><p>所以总的FLOPs倍率可以近似用($({\alpha \cdot \beta^2 \cdot \gamma^2})^\phi$)来表示，当限制${\alpha \cdot \beta^2 \cdot \gamma^2} \approx 2$，对于任意一个$\phi$而言FLOPs想当增加了$2^\phi$倍</p><p>接下来作者在基准网络EfficientNetB-0上使用NAS来搜索$\alpha,\beta,\gamma$这三个参数。</p><ol><li>首先固定$\phi &#x3D; 1$，并基于上面给出的公式(2)和(3)进行搜索，作者发现对于EfficientNetB-0最佳参数为</li><li>接着固定$\alpha&#x3D;1.2,\beta&#x3D;1.1,\gamma&#x3D;1.15$，在EfficientNetB-0的基础上使用不同的$\phi$分别得到EfficientNetB-1至EfficientNetB-7。</li></ol><p>需要注意的是，对于不同的基准网络搜索出的α , β , γ 也不一定相同。还需要注意的是，在原论文中，作者也说了，如果直接在大模型上去搜索α , β , γ 可能获得更好的结果，但是在较大的模型中搜索成本太大，所以这篇文章就在比较小的EfficientNetB-0模型上进行搜索的。</p><blockquote><p>Notably, it is possible to achieve even better performance by searching for α, β, γ directly around a large model, but the search cost becomes prohibitively more expensive on larger models. Our method solves this issue by only doing search once on the small baseline network (step 1), and then use the same scaling coefficients for all other models (step 2).</p></blockquote><h2 id="网络详细结构"><a href="#网络详细结构" class="headerlink" title="网络详细结构"></a>网络详细结构</h2><p>下表为EfficientNet-B0的网络框架（B1-B7就是在B0的基础上修改<strong>Resolution</strong>，<strong>Channels</strong>以及<strong>Layers</strong>），可以看出网络总共分成了9个<strong>Stage</strong>，第一个Stage就是一个卷积核大小为3x3步距为2的普通卷积层（包含BN和激活函数<strong>Swish</strong>），<strong>Stage2～Stage8</strong>都是在重复堆叠<strong>MBConv</strong>结构（最后一列的<strong>Layers</strong>表示该<strong>Stage</strong>重复<strong>MBConv</strong>结构多少次），而<strong>Stage9</strong>由一个普通的1x1的卷积层（包含BN和激活函数<strong>Swish</strong>）一个平均池化层和一个全连接层组成。表格中每个<strong>MBConv</strong>后会跟一个数字1或6，这里的1或6就是倍率因子n即<strong>MBConv</strong>中第一个1x1的卷积层会将输入特征矩阵的<strong>channels</strong>扩充为n倍，其中k3x3或k5x5表示<strong>MBConv</strong>中<strong>Depthwise Conv</strong>所采用的卷积核大小。<strong>Channels</strong>表示通过该<strong>Stage</strong>后输出特征矩阵的Channels。</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220403144813.png"></p><h3 id="MBConv"><a href="#MBConv" class="headerlink" title="MBConv"></a>MBConv</h3><p>MBConv其实就是MobileNetV3网络中的InvertedResidualBlock，但也有些许区别。一个是采用的激活函数不一样(EfficientNet的MBConv中使用的都是Swish激活函数)，另一个是在每个MBConv中都加入了SE(Squeeze-and-Excitation)模块。</p><p>以下结构图为B站UP主<a href="https://space.bilibili.com/18161609">霹雳吧啦Wz</a>绘制的MBConv结构。</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220403145314.png"></p><p>如图所示，<strong>MBConv</strong>结构主要由一个1x1的普通卷积（升维作用，包含<strong>BN</strong>和<strong>Swish</strong>），一个<strong>kxk</strong>的<strong>Depthwise Conv</strong>卷积（包含<strong>BN</strong>和<strong>Swish</strong>）<strong>k</strong>的具体值可看<strong>EfficientNet-B0</strong>的网络框架主要有3x3和5x5两种情况，一个SE模块，一个1x1的普通卷积（降维作用，包含BN），一个<strong>Droupout</strong>层构成。搭建过程中还需要注意几点：</p><ul><li>第一个升维的<strong>1x1</strong>卷积层，它的卷积核个数是输入特征矩阵<strong>channel</strong>的n倍， $n \in \left{1, 6\right}$(n∈{1,6})。</li><li>当n &#x3D; 1时，不要第一个升维的1x1卷积层，即<strong>Stage2</strong>中的<strong>MBConv</strong>结构都没有第一个升维的1x1卷积层（这和<strong>MobileNetV3</strong>网络类似）。</li><li>关于<strong>shortcut</strong>连接，仅当输入<strong>MBConv</strong>结构的特征矩阵与输出的特征矩阵<strong>shape</strong>相同时才存在（代码中可通过$stride&#x3D;&#x3D;1 and inputc_channels&#x3D;&#x3D;output_channels$条件来判断）。</li><li>SE模块如下所示，由&#x3D;&#x3D;一个全局平均池化&#x3D;&#x3D;，&#x3D;&#x3D;两个全连接层&#x3D;&#x3D;组成。第一个全连接层的节点个数是输入该MBConv特征矩阵channels的$\frac{1}{4}$ 且使用Swish激活函数。第二个全连接层的节点个数等于Depthwise Conv层输出的特征矩阵channels，且使用Sigmoid激活函数。</li><li>Dropout层的dropout_rate在tensorflow的keras源码中对应的是drop_connect_rate后面会细讲（注意，在源码实现中只有使用shortcut的时候才有Dropout层）。</li></ul><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220403153958.png"></p><h3 id="EfficientNet-B0-B7-参数"><a href="#EfficientNet-B0-B7-参数" class="headerlink" title="EfficientNet(B0-B7)参数"></a>EfficientNet(B0-B7)参数</h3><table><thead><tr><th align="center">Model</th><th align="center">input_size</th><th align="center">width_coefficient</th><th align="center">depth_coefficient</th><th align="center">drop_connect_rate</th><th align="center">dropout_rate</th></tr></thead><tbody><tr><td align="center">EfficientNetB0</td><td align="center">224x224</td><td align="center">1.0</td><td align="center">1.0</td><td align="center">0.2</td><td align="center">0.2</td></tr><tr><td align="center">EfficientNetB1</td><td align="center">240×240</td><td align="center">1.0</td><td align="center">1.1</td><td align="center">0.2</td><td align="center">0.2</td></tr><tr><td align="center">EfficientNetB2</td><td align="center">260x260</td><td align="center">1.1</td><td align="center">1.2</td><td align="center">0.2</td><td align="center">0.3</td></tr><tr><td align="center">EfficientNetB3</td><td align="center">300x300</td><td align="center">1.2</td><td align="center">1.4</td><td align="center">0.2</td><td align="center">0.3</td></tr><tr><td align="center">EfficientNetB4</td><td align="center">380x380</td><td align="center">1.4</td><td align="center">1.8</td><td align="center">0.2</td><td align="center">0.4</td></tr><tr><td align="center">EfficientNetB5</td><td align="center">456x456</td><td align="center">1.6</td><td align="center">2.2</td><td align="center">0.2</td><td align="center">0.4</td></tr><tr><td align="center">EfficientNetB6</td><td align="center">528x528</td><td align="center">1.8</td><td align="center">2.6</td><td align="center">0.2</td><td align="center">0.5</td></tr><tr><td align="center">EfficientNetB7</td><td align="center">600x600</td><td align="center">2.0</td><td align="center">3.1</td><td align="center">0.2</td><td align="center">0.5</td></tr></tbody></table><ul><li><strong>input_size</strong>代表训练网络时输入网络的图像大小</li><li><strong>width_coefficient</strong>代表<strong>channel</strong>维度上的倍率因子，比如在 <strong>EfficientNetB0</strong>中<strong>Stage1</strong>的3x3卷积层所使用的卷积核个数是32，那么在B6中就是32 × 1.8 &#x3D; 57.6 32 \times 1.8&#x3D;57.632×1.8&#x3D;57.6接着取整到离它最近的8的整数倍即56，其它<strong>Stage</strong>同理。</li><li><strong>depth_coefficient</strong>代表depth维度上的倍率因子（仅针对<strong>Stage2</strong>到<strong>Stage8</strong>），比如在<strong>EfficientNetB0</strong>中<strong>Stage7</strong>的 $\widehat L_i&#x3D;4$，那么在B6中就是4 × 2.6 &#x3D; 10.4 4 \times 2.6&#x3D;10.44×2.6&#x3D;10.4接着向上取整即11。</li><li><strong>drop_connect_rate</strong>是在<strong>MBConv</strong>结构中<strong>dropout</strong>层使用的<strong>drop_rate</strong>，在官方keras模块的实现中<strong>MBConv</strong>结构的<strong>drop_rate</strong>是从0递增到<strong>drop_connect_rate</strong>的（具体实现可以看下官方源码，注意，在源码实现中只有使用<strong>shortcut</strong>的时候才有<strong>Dropout</strong>层）。还需要注意的是，这里的<strong>Dropout</strong>层是<strong>Stochastic Depth</strong>，即会随机丢掉整个<strong>block</strong>的主分支（只剩捷径分支，相当于直接跳过了这个<strong>block</strong>）也可以理解为减少了网络的深度。</li><li><strong>dropout_rate</strong>是最后一个全连接层前的<strong>dropout</strong>层（在<strong>stage9</strong>的Pooling与FC之间）的<strong>dropout_rate</strong>。</li></ul><p>最后是原论文中关于EfficientNet与当时主流网络的性能参数对比:</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220403155412.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 文献阅读 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机视觉 </tag>
+            
+            <tag> EfficientNet </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>文件夹指定软件打开</title>
+      <link href="/2022/04/03/%E6%96%87%E4%BB%B6%E5%A4%B9%E6%8C%87%E5%AE%9A%E8%BD%AF%E4%BB%B6%E6%89%93%E5%BC%80/"/>
+      <url>/2022/04/03/%E6%96%87%E4%BB%B6%E5%A4%B9%E6%8C%87%E5%AE%9A%E8%BD%AF%E4%BB%B6%E6%89%93%E5%BC%80/</url>
+      
+        <content type="html"><![CDATA[<h1 id="鼠标右键属性相关"><a href="#鼠标右键属性相关" class="headerlink" title="鼠标右键属性相关"></a>鼠标右键属性相关</h1><h2 id="右键文件夹指定软件打开"><a href="#右键文件夹指定软件打开" class="headerlink" title="右键文件夹指定软件打开"></a>右键文件夹指定软件打开</h2><p>GitHub上下载的代码通常需要对应的编译器打开项目文件，比如我们通常要指定用pycharm或webcharm打开相关文件夹。</p><p>教程如下：</p><ol><li>win+R，输入regedit打开注册表编辑器。</li></ol><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220408145825.png"></p><p>2.在路径HKEY_CURRENT_USER\SOFTWARE\Classes\Directory\shell下新建项，命名为Open Folder as XXX Project。</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220408150134.png"></p><ol start="3"><li>在此文件夹右击新建字符串值Icon,属性为 软件的本地安装路径\xxx.exe</li></ol><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220408150400.png"></p><ol start="4"><li><p>在Open Folder as XXX Project文件夹下新建项Command,其值修改为 “软件的本地安装路径\xxx.exe” “%1”</p><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220408150617.png"></p></li><li><p>设置完成，选项即可出现在您右击文件夹之后！</p></li></ol><h2 id="删除不需要的鼠标右键属性"><a href="#删除不需要的鼠标右键属性" class="headerlink" title="删除不需要的鼠标右键属性"></a>删除不需要的鼠标右键属性</h2><ol><li><p>打开注册表</p><p>win+R -&gt; input “regedit”</p></li><li><p>在地址栏输入“HKEY_CLASSES_ROOT\Directory\shell”，并回车进入</p></li><li><p>进入ContextMenuHandlers项后，可以根据个人的需求，把鼠标右键菜单中不需要项目删掉，或者保留new项，其他的全部删掉即可删除鼠标右键菜单选项。</p></li></ol><p><img src="https://cdn.jsdelivr.net/gh/PengJoy1106/peng_picgo/img/20220408151748.png"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 使用技巧 </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>碎碎念1</title>
+      <link href="/2022/04/03/%E8%BF%9C%E5%A4%84%E7%9A%84%E6%8B%89%E8%8E%AB/"/>
+      <url>/2022/04/03/%E8%BF%9C%E5%A4%84%E7%9A%84%E6%8B%89%E8%8E%AB/</url>
+      
+        <content type="html"><![CDATA[<p><strong>“远处的拉莫在看着你，那是你的神。</strong></p><p><strong>你存在的每一秒，被痛苦占据的每一秒，他都在看着你。</strong></p><p><strong>有时候你可以感觉到他，但一生只有那么几个瞬间。”</strong></p><h1 id="2022-4-3"><a href="#2022-4-3" class="headerlink" title="2022.4.3"></a>2022.4.3</h1><p>P54<br>重要的是，我知道痛苦其他的样貌，它们像是白色的羽毛，像是水面上的烟火，像是雪山的幽灵，它们是一切不可诉说的、静默在永恒里的、被掩埋着的枯萎、灰败和消亡。<br>P62<br>很久之前，我就告诉自己不能被任何所击垮，只要有一瞬间的崩塌，便会迅速瓦解。<br>P68<br>人就是这样，要有比他们自身更糟的东西在上方控制着他们，才能不处于濒死的状态。<br>P69<br>有一种叫作塌陷的感受，几乎每次入睡时都会溢出来，最开始是胸腔，然后是腹部、膝盖，向上抵达脊椎，向下抵达生殖器，最后是四肢的末端，全部塌陷，然后进入睡眠。<br>P74<br>那些聪明人，从古至今追求着智慧的人，他们令文明得到进化，逐利使文明扩张，扩张代表着侵蚀、封锁、屠杀，然而仍有奔向智慧的人，一切糟糕的结果由他们而起，他们进化着文明的同时，让更野蛮的力量得以无限扩张。这从来都不是双刃剑，一直都是通向此刻的必然。<br>P79<br>上一代人总是会不遗余力地压制下一代，这与进化的意志相反。在我吃这橘子的那个夜晚，我的朋友说。他的女朋友坐在一侧，腿放在他手腕上。<br>你被压制什么了？我说<br>我被不剥夺了很多，也对抗不了，他们扣押了我所有的版权。就像现在，我把这些称作邪恶，但可能二十年后，我也会这么干。我剥夺年轻人，压制他们，利用他们，可能只是因为他们拥有的东西令我心烦。他揉着那个女人的脚，我能看出这中间有种色情的意味，情侣喜欢在公开场合以不起眼的方式调情，这种色情使他们有乐趣。如果没有旁观者，充斥在这里的只剩下乏味。<br>我能理解你，就你所说的这种邪恶，人们会在不同的年龄以不同的方式发作出来。我说。<br>童年时是什么？他说。<br>杀戮。<br>杀戮？他的女朋友抽回了脚。<br>我总觉得，虽然所有阶段都会产生杀戮，但杀戮始于童年，你身边更为强大的个体告诉你杀戮是可怕的。某个儿童敲死一片蚂蚁，这被认为是不好的，但这个不好，只是因为你屈服于周围的强大，毕竟那段日子，你没有选择任何事物的权利。<br>所以呢？朋友说。<br>所以杀戮被掩埋住，在一些年代以别的方式发泄出来。像你所说的，在一些年代你被剥夺了，在另一些年代以直接的杀戮呈现。<br>哈哈，那青年呢？女人问。<br>侵占。<br>我没觉得自己在侵占什么啊。朋友说。<br>让自己覆盖更多的事物，侵占所有可以看得到的。我仔细想想，我觉得这个民族的自负跟这个有关系。这个民族，还停留在青年人的阶段，也就是一个侵占的时期，必然会认为自己无所不能。<br>那中年呢？<br>我还不知道，但我观察到，中年已经开始向毁灭过渡了，不计任何后果地令世界丑陋下去。<br>你这样看待周遭，因此活得糟糕透顶。朋友说。<br>我无论怎么看待，这都是注定的。你能想象十几年之后的样子吗？我们还能坐在这里，你递给我两个橘子，你虚伪地跟我说起这漫长的友谊，你讲起我们的过去那看起来好玩的事情。但到了某些情况下，即便是很脆弱的情况，我认为所有人也会毫不犹豫地获得那个强大的本能。<br>十几年后，我们已经结婚很多年，有了两个孩子，会告诫他们不能变成你这样。女人笑着说。<br>他们的狗过来咬着我的拖鞋。<br>P83<br>愚笨是因为安逸。<br>P84<br>“我们无法触碰，亦不可调和”<br>P85<br>我们，与什么事物调和过呢？我抬起自己的手，看着那条渐变如山脊的伤痕，上面沾满了尘土，我与自身的伤口都无法调和。<br>P92<br>“其实听别人的故事，不会让你感受到什么。”</p><h1 id="2022-4-9"><a href="#2022-4-9" class="headerlink" title="2022.4.9"></a>2022.4.9</h1><p>P100<br>实际上，喝酒这件事，不需要破产或者家破人亡，哪怕摔伤了膝盖，或者一根手指不小心被划伤，都可以喝酒。<br>P136<br>“爱情有一个衰变期，如果之前没有变化的话，便会走向终结。”</p><h1 id="2022-4-10"><a href="#2022-4-10" class="headerlink" title="2022.4.10"></a>2022.4.10</h1><p>P173<br>我所珍藏的东西，总是在触碰的时候就轻易瓦解成粉尘，这便是一种可以称为陷阱的东西。<br>P184<br>我越是去经历和感受些什么，她就会越来越远离我。<br>P187<br>也就是说，那些十几年前所期待的——虽然我并不知道在期待什么——都没有发生，构成我生活的每一部分都原封不动地矗立在这里。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 解体与救赎 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 阅读 </tag>
+            
+            <tag> 文摘 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Yolov5学习笔记9|YOLOv5-Face|改进原理解读与论文复现</title>
       <link href="/2022/03/30/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B09/"/>
       <url>/2022/03/30/Yolov5%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B09/</url>
@@ -20,11 +166,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -52,8 +198,6 @@
             <tag> deeplearning </tag>
             
             <tag> DNN </tag>
-            
-            <tag> yolov5 </tag>
             
         </tags>
       
@@ -132,11 +276,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -161,11 +305,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -190,11 +334,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -248,11 +392,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -304,11 +448,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -333,11 +477,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -381,11 +525,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
@@ -454,11 +598,11 @@
       
         <tags>
             
-            <tag> yolov5 </tag>
-            
             <tag> python </tag>
             
             <tag> 计算机视觉 </tag>
+            
+            <tag> yolov5 </tag>
             
         </tags>
       
