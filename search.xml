@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>与小陈同学的打卡计划1💘|0418-0424规划</title>
+      <link href="/2022/04/17/0418-0424%E8%A7%84%E5%88%92/"/>
+      <url>/2022/04/17/0418-0424%E8%A7%84%E5%88%92/</url>
+      
+        <content type="html"><![CDATA[<p><strong>数学建模</strong> (🚩🚩🚩🚩)<br>距离五一数学建模大赛还有13天</p><blockquote><p>规划概要：<br>针对数学建模题型学习两个模型对应的算法，学习原理的过程中整理笔记，在MATLAB上验证算法并更换数据集分析结果。</p></blockquote><ul><li>层次分析法<ul><li><input disabled="" type="checkbox"> 基于熵权法对Topsis模型的修正——解析原理和代码(对应课程：番外篇)</li></ul></li><li>预测模型<ul><li><input disabled="" type="checkbox"> 灰色预测算法——原理+代码(对应课程：基础篇&#x2F;第12讲)</li><li><input disabled="" type="checkbox"> 神经网络预测算法——原理+代码(对应课程：基础篇&#x2F;第12讲)</li></ul></li><li>数模作图与写作<ul><li><input disabled="" type="checkbox"> 学习用Excel绘制统计图(对应课程：更新篇&#x2F;更新1)</li><li><input disabled="" type="checkbox"> 写一篇完整的数学建模论文<blockquote><p>找一道题目，运用本周学习的其中一道算法(神经网络预测算法)完成论文写作练习。<br>时间安排：</p><ol><li>本周的某三个晚上学习算法，时间自定</li><li>下午整理算法的原理笔记</li><li>双休日的某一天完成论文写作</li></ol></blockquote></li></ul></li></ul><hr><p><strong>计算机视觉</strong>(🚩🚩🚩)</p><ul><li>Yolov5-v6.1学习<ul><li><input disabled="" type="checkbox"> Yolov5的深入学习<blockquote><p>针对Yolov5算法中的Backbone部分的每个模块深入理解，<br>基于新发现的网站：<a href="https://poloclub.github.io/cnn-explainer/">卷积神经网络可视化</a>联合学习</p></blockquote></li><li><input disabled="" type="checkbox"> Yolov5-ship模型检测与评价<blockquote><p>用上周训练的Yolov5权重文件在已有的数据集上进行验证，并分析评价训练效果和输出各种曲线</p></blockquote></li></ul></li><li>Vision Transform算法学习<ul><li><input disabled="" type="checkbox"> 算法框架和原理学习  <blockquote><p>继续学习Vision Tranform的网络架构和原理，并整理笔记</p></blockquote></li></ul></li></ul><hr><p><strong>神经网络论文</strong>(课程作业)(🚩🚩)</p><ul><li>看文献<ul><li><input disabled="" type="checkbox"> Graph Wavelet Neural Network</li><li><input disabled="" type="checkbox"> Multi-level Wavelet Convolutional Neural Networks<blockquote><p>目标要求：</p><ol><li>对应源码学习</li><li>看懂原理</li><li>验证原论文数据集并更换数据集验证</li></ol></blockquote></li></ul></li><li><ul><li><input disabled="" type="checkbox"> 写作业大论文大论文框架</li></ul></li></ul><hr><p><strong>支线任务</strong>(🚩)</p><ul><li><p>嵌入式应用技术备课</p><blockquote><p>第9周开始新一章节的课程，周日完成备课</p></blockquote></li><li><p>研电赛相关</p><blockquote><p>实验+技术报告写作</p></blockquote></li><li><p>深度学习课程与作业</p><blockquote><p>周一上完课后，晚上带电脑回寝室完成</p></blockquote></li><li><p>本科生毕设</p><blockquote><ol><li>24VDC伺服电机驱动器系统设计</li><li>智慧物流小车设计</li></ol></blockquote></li></ul><hr><p><strong>规划评价</strong></p><blockquote><p>将一周划分为6个上午、6个下午、7个晚上。<br>每周二上午需要备课，每周有两次核酸检测，有1天不早起，有一天或半天自由休息，可能会有规划之外的事情干扰(实验室吐槽大会、导师奇葩安排、学院莫名其妙任务活动)，可能自己的状态不佳能力不够导致效率低下任务周期变长。 </p></blockquote><p>基于以上情况：任务完成80%以上在接受范围内</p><p>上午8:00从宿舍出发，吃完早饭到达实验室预计8:30<br>下午第一节有课时不午睡，无课时2:00从宿舍出发<br>晚上6:30开始学习，22:00~22:30回寝室</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 学习计划 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> plan </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Vision Transform学习笔记2|Self-Attention</title>
       <link href="/2022/04/13/ViT%E6%94%AF%E7%BA%BF-Self-Attention/"/>
       <url>/2022/04/13/ViT%E6%94%AF%E7%BA%BF-Self-Attention/</url>
